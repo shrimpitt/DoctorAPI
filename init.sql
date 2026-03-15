@@ -1,0 +1,189 @@
+﻿CREATE TABLE IF NOT EXISTS product_categories (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS products (
+    id BIGSERIAL PRIMARY KEY,
+    category_id BIGINT REFERENCES product_categories(id) ON DELETE SET NULL,
+    name VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL UNIQUE,
+    sku VARCHAR(100),
+    short_description TEXT,
+    full_description TEXT,
+    price NUMERIC(12,2) NOT NULL DEFAULT 0,
+    stock_qty INT NOT NULL DEFAULT 0,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    main_image_url TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS consultation_types (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    price NUMERIC(12,2) NOT NULL DEFAULT 0,
+    duration_minutes INT NOT NULL DEFAULT 60,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS doctor_schedule_slots (
+    id BIGSERIAL PRIMARY KEY,
+    consultation_type_id BIGINT REFERENCES consultation_types(id) ON DELETE CASCADE,
+    slot_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    is_available BOOLEAN NOT NULL DEFAULT TRUE,
+    reserved_by_appointment_id BIGINT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS appointments (
+    id BIGSERIAL PRIMARY KEY,
+    consultation_type_id BIGINT REFERENCES consultation_types(id) ON DELETE SET NULL,
+    schedule_slot_id BIGINT REFERENCES doctor_schedule_slots(id) ON DELETE SET NULL,
+    full_name VARCHAR(255) NOT NULL,
+    phone VARCHAR(50) NOT NULL,
+    email VARCHAR(255),
+    comment TEXT,
+    status VARCHAR(50) NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+    id BIGSERIAL PRIMARY KEY,
+    order_number VARCHAR(100) NOT NULL UNIQUE,
+    full_name VARCHAR(255) NOT NULL,
+    phone VARCHAR(50) NOT NULL,
+    email VARCHAR(255),
+    city VARCHAR(255),
+    address_line TEXT,
+    comment TEXT,
+    status VARCHAR(50) NOT NULL DEFAULT 'pending',
+    total_amount NUMERIC(12,2) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS order_items (
+    id BIGSERIAL PRIMARY KEY,
+    order_id BIGINT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    product_id BIGINT REFERENCES products(id) ON DELETE SET NULL,
+    product_name VARCHAR(255) NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    unit_price NUMERIC(12,2) NOT NULL DEFAULT 0,
+    total_price NUMERIC(12,2) NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS doctor_profile (
+    id BIGSERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    title VARCHAR(255),
+    short_bio TEXT,
+    full_bio TEXT,
+    experience_years INT,
+    main_photo_url TEXT,
+    whatsapp_phone VARCHAR(50),
+    email VARCHAR(255),
+    instagram_url TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS doctor_education (
+    id BIGSERIAL PRIMARY KEY,
+    doctor_profile_id BIGINT NOT NULL REFERENCES doctor_profile(id) ON DELETE CASCADE,
+    institution_name VARCHAR(255) NOT NULL,
+    faculty VARCHAR(255),
+    specialization VARCHAR(255),
+    start_year INT,
+    end_year INT,
+    description TEXT,
+    sort_order INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS doctor_certificates (
+    id BIGSERIAL PRIMARY KEY,
+    doctor_profile_id BIGINT NOT NULL REFERENCES doctor_profile(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    issuer VARCHAR(255),
+    issue_year INT,
+    file_url TEXT,
+    description TEXT,
+    sort_order INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS settings (
+    id BIGSERIAL PRIMARY KEY,
+    assistant_whatsapp VARCHAR(50),
+    instagram_url TEXT,
+    provider_name VARCHAR(255),
+    provider_bin VARCHAR(50),
+    footer_notice TEXT
+);
+
+INSERT INTO product_categories (name, slug, description, is_active, sort_order)
+VALUES ('Пептиды', 'peptides', 'Пептидная продукция', TRUE, 1)
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO products (category_id, name, slug, sku, short_description, full_description, price, stock_qty, is_active, main_image_url)
+VALUES
+(1, 'Epitalon', 'epitalon', 'EPT-001', 'Пептидный комплекс для поддержки организма', 'Подробное описание товара', 18000, 10, TRUE, 'https://example.com/epitalon.jpg'),
+(1, 'Vesugen', 'vesugen', 'VES-001', 'Поддержка сосудистой системы', 'Подробное описание товара Vesugen', 16500, 8, TRUE, 'https://example.com/vesugen.jpg')
+ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO consultation_types (name, description, price, duration_minutes, is_active)
+VALUES
+('Онлайн консультация', 'Консультация в онлайн формате', 20000, 60, TRUE),
+('Оффлайн консультация', 'Очный прием у врача', 25000, 60, TRUE),
+('Повторная консультация', 'Повторный прием и корректировка рекомендаций', 15000, 30, TRUE);
+
+INSERT INTO doctor_schedule_slots (consultation_type_id, slot_date, start_time, end_time, is_available)
+VALUES
+(1, '2026-03-15', '10:00', '11:00', TRUE),
+(1, '2026-03-15', '12:00', '13:00', TRUE),
+(2, '2026-03-16', '15:00', '16:00', TRUE),
+(3, '2026-03-17', '17:00', '17:30', TRUE);
+
+INSERT INTO doctor_profile (full_name, title, short_bio, full_bio, experience_years, whatsapp_phone, instagram_url)
+VALUES (
+'Кадырбекова Жанар Амангельдыевна',
+'Эндокринолог-нутрициолог · Anti-age эксперт',
+'Эксперт в области пептидной биорегуляции, эндокринологии и антивозрастного подхода к здоровью. Ваш эндокринолог с 21-летним опытом.',
+'Кадырбекова Жанар Амангельдыевна — эндокринолог-нутрициолог, anti-age эксперт, специалист в области пептидной биорегуляции. Проводит обучающие онлайн-разборы в Казахстане, России и дальнем зарубежье. Золотой рантье компании «PEPTIDES», организатор и лектор курса пептидной биорегуляции. Последипломное обучение проходила в Институте PreventAge, Advance, а также прошла курс эпигенетической биорегуляции компании «PEPTIDES». Награждена медалью «Денсаулық» за вклад в оздоровление нации Республики Казахстан.',
+21,
+'+77074546598',
+'https://instagram.com/doctor_kadyrbekova'
+);
+
+INSERT INTO doctor_education (doctor_profile_id, institution_name, specialization, description, sort_order)
+VALUES
+(1, 'Институт PreventAge, Advance', 'Последипломное обучение', 'Подготовка в области anti-age и превентивного подхода', 1);
+
+INSERT INTO doctor_certificates (doctor_profile_id, title, issuer, description, sort_order)
+VALUES
+(1, 'Золотой рантье компании «PEPTIDES»', 'PEPTIDES', NULL, 1),
+(1, 'Организатор и лектор курса пептидной биорегуляции', NULL, 'Проведение и организация обучающего курса по пептидной биорегуляции', 2),
+(1, 'Последипломное обучение', 'Институт PreventAge, Advance', 'Последипломная подготовка в области антивозрастного и превентивного подхода', 3),
+(1, 'Курс эпигенетической биорегуляции', 'Компания «PEPTIDES»', NULL, 4),
+(1, 'Медаль «Денсаулық» за вклад в оздоровление нации РК', NULL, 'Награда за вклад в здоровье нации Республики Казахстан', 5);
+
+INSERT INTO settings (assistant_whatsapp, instagram_url, provider_name, provider_bin, footer_notice)
+VALUES (
+'+77074546598',
+'https://instagram.com/doctor_kadyrbekova',
+'ИП КАДЫРБЕКОВА',
+'701027400865',
+'Обучающая онлайн-сессия «Восстановление» — образовательный разбор образа жизни и принципов восстановления. Услуга носит обучающий характер и не является медицинской деятельностью.'
+);
