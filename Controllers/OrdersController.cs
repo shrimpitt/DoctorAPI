@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DoctorAPI.Data;
 using DoctorAPI.DTOs;
@@ -18,6 +19,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
             var orders = await _context.Orders
@@ -28,6 +30,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult> GetOrderById(long id)
         {
             var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
@@ -47,6 +50,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult> CreateOrder(CreateOrderDto dto)
         {
             if (dto.Items == null || dto.Items.Count == 0)
@@ -115,6 +119,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpPatch("{id}/status")]
+        [Authorize]
         public async Task<ActionResult> UpdateOrderStatus(long id, UpdateOrderStatusDto dto)
         {
             var order = await _context.Orders.FindAsync(id);

@@ -1,6 +1,7 @@
 ﻿using DoctorAPI.Data;
 using DoctorAPI.DTOs;
 using DoctorAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpGet("doctor-profile")]
+        [AllowAnonymous]
         public async Task<ActionResult<DoctorProfile>> GetDoctorProfile()
         {
             var profile = await _context.DoctorProfiles.FirstOrDefaultAsync();
@@ -29,6 +31,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpGet("doctor-education")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<DoctorEducation>>> GetDoctorEducation()
         {
             var education = await _context.DoctorEducations
@@ -39,6 +42,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpGet("doctor-certificates")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<DoctorCertificate>>> GetDoctorCertificates()
         {
             var certificates = await _context.DoctorCertificates
@@ -47,7 +51,9 @@ namespace DoctorAPI.Controllers
 
             return Ok(certificates);
         }
+
         [HttpPut("doctor-profile")]
+        [Authorize]
         public async Task<IActionResult> UpdateDoctorProfile(UpdateDoctorProfileDto dto)
         {
             var profile = await _context.DoctorProfiles.FirstOrDefaultAsync();
@@ -72,7 +78,9 @@ namespace DoctorAPI.Controllers
 
             return Ok(profile);
         }
+
         [HttpPost("doctor-education")]
+        [Authorize]
         public async Task<IActionResult> CreateDoctorEducation(CreateDoctorEducationDto dto)
         {
             var profileExists = await _context.DoctorProfiles
@@ -102,6 +110,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpPut("doctor-education/{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateDoctorEducation(long id, UpdateDoctorEducationDto dto)
         {
             var education = await _context.DoctorEducations.FindAsync(id);
@@ -134,6 +143,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpDelete("doctor-education/{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteDoctorEducation(long id)
         {
             var education = await _context.DoctorEducations.FindAsync(id);
@@ -148,7 +158,9 @@ namespace DoctorAPI.Controllers
 
             return Ok(new { message = "Doctor education deleted successfully" });
         }
+
         [HttpPost("doctor-certificates")]
+        [Authorize]
         public async Task<IActionResult> CreateDoctorCertificate(CreateDoctorCertificateDto dto)
         {
             var profileExists = await _context.DoctorProfiles
@@ -177,6 +189,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpPut("doctor-certificates/{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateDoctorCertificate(long id, UpdateDoctorCertificateDto dto)
         {
             var certificate = await _context.DoctorCertificates.FindAsync(id);
@@ -208,6 +221,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpDelete("doctor-certificates/{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteDoctorCertificate(long id)
         {
             var certificate = await _context.DoctorCertificates.FindAsync(id);

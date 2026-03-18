@@ -2,7 +2,7 @@
 
 namespace DoctorAPI.Models
 {
-    [Table("orders")]
+    [Table("orders", Schema = "public")]
     public class Order
     {
         [Column("id")]

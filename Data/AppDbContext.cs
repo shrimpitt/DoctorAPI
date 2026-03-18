@@ -9,6 +9,7 @@ namespace DoctorAPI.Data
         {
         }
 
+        public DbSet<Admin> Admins { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<ConsultationType> ConsultationTypes { get; set; }
@@ -20,5 +21,26 @@ namespace DoctorAPI.Data
         public DbSet<DoctorEducation> DoctorEducations { get; set; }
         public DbSet<DoctorCertificate> DoctorCertificates { get; set; }
         public DbSet<Setting> Settings { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Admin>(entity =>
+            {
+                entity.ToTable("admins");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.Email).HasColumnName("email");
+                entity.Property(e => e.PasswordHash).HasColumnName("password_hash");
+                entity.Property(e => e.FullName).HasColumnName("full_name");
+                entity.Property(e => e.Role).HasColumnName("role");
+                entity.Property(e => e.IsActive).HasColumnName("is_active");
+                entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+                entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
+            });
+        }
     }
 }

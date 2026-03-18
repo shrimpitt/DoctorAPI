@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DoctorAPI.Data;
 using DoctorAPI.Models;
@@ -18,10 +19,10 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpPost]
         public async Task<ActionResult> CreateAppointment([FromBody] CreateAppointmentDto dto)
         {
             var slot = await _context.DoctorScheduleSlots
@@ -82,6 +83,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> GetAppointments(
             [FromQuery] string? status,
@@ -136,6 +138,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Appointment>> GetAppointmentById(long id)
@@ -151,6 +154,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpPatch("{id}/status")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

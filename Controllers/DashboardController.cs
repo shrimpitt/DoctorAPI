@@ -1,4 +1,5 @@
 ﻿using DoctorAPI.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,6 +7,7 @@ namespace DoctorAPI.Controllers
 {
     [Route("api/dashboard")]
     [ApiController]
+    [Authorize]
     public class DashboardController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -44,6 +46,7 @@ namespace DoctorAPI.Controllers
                 bookedSlots
             });
         }
+
         [HttpGet("appointments-per-day")]
         public async Task<IActionResult> GetAppointmentsPerDay()
         {

@@ -1,6 +1,7 @@
 ﻿using DoctorAPI.Data;
 using DoctorAPI.DTOs;
 using DoctorAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpGet("available")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<DoctorScheduleSlot>>> GetAvailableSlots()
         {
             var slots = await _context.DoctorScheduleSlots
@@ -30,8 +32,9 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpGet("available-grouped")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<AvailableSlotsByDateDto>>> GetAvailableSlotsGrouped(
-    [FromQuery] long? consultationTypeId)
+            [FromQuery] long? consultationTypeId)
         {
             var query = _context.DoctorScheduleSlots
                 .Where(s => s.IsAvailable);
@@ -79,7 +82,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpPost]
-        [HttpPost]
+        [Authorize]
         public async Task<ActionResult<DoctorScheduleSlot>> CreateSlot(CreateDoctorScheduleSlotDto dto)
         {
             if (dto.StartTime >= dto.EndTime)
@@ -125,7 +128,9 @@ namespace DoctorAPI.Controllers
 
             return Ok(slot);
         }
+
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteSlot(long id)
         {
             var slot = await _context.DoctorScheduleSlots.FindAsync(id);
@@ -145,7 +150,9 @@ namespace DoctorAPI.Controllers
 
             return Ok(new { message = "Slot deleted successfully" });
         }
+
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateSlot(long id, UpdateDoctorScheduleSlotDto dto)
         {
             var slot = await _context.DoctorScheduleSlots.FindAsync(id);
@@ -197,11 +204,13 @@ namespace DoctorAPI.Controllers
 
             return Ok(slot);
         }
+
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<DoctorScheduleSlot>>> GetAllSlots(
-    [FromQuery] DateTime? date,
-    [FromQuery] long? consultationTypeId,
-    [FromQuery] bool? isAvailable)
+            [FromQuery] DateTime? date,
+            [FromQuery] long? consultationTypeId,
+            [FromQuery] bool? isAvailable)
         {
             var query = _context.DoctorScheduleSlots.AsQueryable();
 
@@ -228,7 +237,9 @@ namespace DoctorAPI.Controllers
 
             return Ok(slots);
         }
+
         [HttpPost("bulk")]
+        [Authorize]
         public async Task<IActionResult> CreateSlotsBulk(CreateBulkDoctorScheduleSlotsDto dto)
         {
             if (dto.Slots == null || dto.Slots.Count == 0)

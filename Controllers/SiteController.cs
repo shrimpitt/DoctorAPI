@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DoctorAPI.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DoctorAPI.Controllers
 {
@@ -30,6 +31,33 @@ namespace DoctorAPI.Controllers
                 providerBin = GetValue("provider_bin"),
                 footerNotice = GetValue("footer_notice")
             });
+        }
+        [HttpPut("site-contacts")]
+        [Authorize]
+        public async Task<IActionResult> UpdateSiteContacts([FromBody] Dictionary<string, string> data)
+        {
+            foreach (var item in data)
+            {
+                var setting = await _context.Settings
+                    .FirstOrDefaultAsync(s => s.Key == item.Key);
+
+                if (setting != null)
+                {
+                    setting.Value = item.Value;
+                }
+                else
+                {
+                    _context.Settings.Add(new Models.Setting
+                    {
+                        Key = item.Key,
+                        Value = item.Value
+                    });
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Контакты обновлены" });
         }
     }
 }
