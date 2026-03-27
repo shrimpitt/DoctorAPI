@@ -1,0 +1,315 @@
+/* ═══════════════════════════════════════════
+   HERO — WHITE SPLIT LAYOUT
+   ═══════════════════════════════════════════ */
+.hero {
+  display: grid;
+  grid-template-columns: 55% 45%;
+  min-height: 100vh;
+  background: white;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════
+   LEFT CONTENT PANEL
+   ═══════════════════════════════════════════ */
+.hero__left {
+  display: flex;
+  align-items: center;
+  padding: 120px 72px 80px 72px;
+}
+
+.hero__left-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-width: 580px;
+  width: 100%;
+}
+
+/* ── Badge ── */
+.hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #EEF0FF;
+  color: #5B4FCF;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 100px;
+  margin-bottom: 32px;
+  width: fit-content;
+}
+
+/* ── First line of title — inline with badge ── */
+.hero__title-line1 {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  line-height: 1.1;
+}
+
+/* ── Rotating badge ── */
+.hero__rotating-badge {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  flex-shrink: 0;
+  align-self: center;
+  animation: badge-rotate 12s linear infinite;
+}
+
+.hero__badge-ring-text {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  fill: #1A1A2E;
+  fill-opacity: 0.75;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Center icon — counter-rotates so it stays upright */
+.hero__badge-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  background: #EEF0FF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: badge-rotate-reverse 12s linear infinite;
+}
+
+@keyframes badge-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes badge-rotate-reverse {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(-360deg); }
+}
+
+/* ── Title ── */
+.hero__title {
+  font-family: var(--font-heading);
+  font-size: clamp(44px, 5vw, 72px);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--charcoal);
+  margin-bottom: 36px;
+  letter-spacing: -1px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.hero__title em {
+  font-style: italic;
+  color: var(--primary);
+}
+
+/* ── Feature cards ── */
+.hero__features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 36px;
+}
+
+.hero__feature {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #F0FFF4;
+  border-radius: 12px;
+  padding: 14px 18px;
+}
+
+.hero__feature-icon {
+  width: 40px;
+  height: 40px;
+  background: #4CAF7D;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.hero__feature span {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--charcoal);
+  line-height: 1.4;
+}
+
+/* ── CTA button ── */
+.hero__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #4CAF7D;
+  color: white;
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 600;
+  padding: 18px 40px;
+  border-radius: 12px;
+  text-decoration: none;
+  width: fit-content;
+  margin-bottom: 48px;
+  transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
+  border: none;
+  cursor: pointer;
+}
+.hero__cta:hover {
+  background: #3d9e6c;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(76, 175, 125, 0.4);
+}
+
+/* ── Stats ── */
+.hero__stats {
+  display: flex;
+  align-items: center;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+  gap: 0;
+}
+
+.hero__stats-divider {
+  width: 1px;
+  height: 40px;
+  background: var(--border);
+  flex-shrink: 0;
+  margin: 0 28px;
+}
+
+.hero__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hero__stat-num {
+  font-family: var(--font-heading);
+  font-size: clamp(36px, 3.5vw, 48px);
+  font-weight: 800;
+  color: var(--charcoal);
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.hero__stat-label {
+  font-size: 13px;
+  color: var(--mid-gray);
+  font-weight: 400;
+}
+
+/* ═══════════════════════════════════════════
+   RIGHT PHOTO PANEL
+   ═══════════════════════════════════════════ */
+.hero__right {
+  position: relative;
+  overflow: hidden;
+  background: #f7f5ff;
+}
+
+/* Doctor photo — поверх всего */
+.hero__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  z-index: 2;
+}
+
+/* Decorative branch SVG — самый нижний слой */
+.hero__branches {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+/* Rotating ring text — между ветками и фото */
+.hero__ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(80%, 480px);
+  height: min(80%, 480px);
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  animation: ring-spin 20s linear infinite;
+  pointer-events: none;
+}
+
+.hero__ring-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.hero__ring-text {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  fill: rgba(91, 79, 207, 0.25);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+@keyframes ring-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .hero__left { padding: 100px 48px 60px; }
+}
+
+@media (max-width: 860px) {
+  .hero {
+    grid-template-columns: 1fr;
+    grid-template-rows: 50vw auto;
+    min-height: auto;
+  }
+  .hero__right {
+    order: -1;
+    min-height: 50vw;
+    max-height: 480px;
+  }
+  .hero__left {
+    padding: 60px 32px 60px;
+  }
+  .hero__left-inner {
+    max-width: 100%;
+  }
+  .hero__ring {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero__title { font-size: clamp(36px, 9vw, 52px); }
+  .hero__cta { width: 100%; padding: 16px 24px; font-size: 16px; }
+  .hero__feature span { font-size: 14px; }
+  .hero__stats-divider { margin: 0 16px; }
+  .hero__stat-num { font-size: 32px; }
+}

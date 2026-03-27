@@ -1,0 +1,311 @@
+/* ═══════════════════════════════════════════
+   SEARCH SECTION
+   ═══════════════════════════════════════════ */
+.ss {
+  background: #F2F0FC;
+  padding: 80px 0;
+}
+
+.ss__card {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 8px 48px rgba(91, 79, 207, 0.1), 0 2px 12px rgba(0,0,0,0.04);
+  padding: 80px 64px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+/* ── LEFT ── */
+.ss__left {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.ss__title {
+  font-family: var(--font-heading);
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #1A1A2E;
+  letter-spacing: -1px;
+}
+.ss__title em {
+  font-style: normal;
+  color: #5B4FCF;
+}
+
+.ss__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ss__tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  border: 1px solid #ddd;
+  border-radius: 100px;
+  font-size: 15px;
+  font-weight: 400;
+  color: #1A1A2E;
+  background: white;
+  cursor: default;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.ss__tag:hover {
+  border-color: #5B4FCF;
+  background: #F2F0FC;
+  color: #5B4FCF;
+}
+
+/* ── RIGHT ── */
+.ss__right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ═══════════════════════════════════════════
+   iPHONE FRAME
+   ═══════════════════════════════════════════ */
+.ss-phone {
+  position: relative;
+  width: 300px;
+  height: 600px;
+  background: #1a1a1a;
+  border-radius: 44px;
+  padding: 4px;
+  box-shadow:
+    0 0 0 1px #333,
+    0 32px 80px rgba(0,0,0,0.35),
+    0 8px 24px rgba(0,0,0,0.18),
+    inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+/* Side buttons */
+.ss-phone__btn {
+  position: absolute;
+  background: #2a2a2a;
+  border-radius: 3px;
+}
+.ss-phone__btn--power    { right: -4px; top: 110px; width: 4px; height: 64px; }
+.ss-phone__btn--vol-up   { left:  -4px; top:  90px; width: 4px; height: 40px; }
+.ss-phone__btn--vol-down { left:  -4px; top: 140px; width: 4px; height: 40px; }
+
+/* Screen */
+.ss-phone__screen {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  border-radius: 41px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dynamic island */
+.ss-phone__island {
+  width: 110px;
+  height: 30px;
+  background: #000;
+  border-radius: 0 0 20px 20px;
+  margin: 12px auto 0;
+  flex-shrink: 0;
+}
+
+/* Scrollable content area */
+.ss-phone__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 14px 0;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Home bar */
+.ss-phone__home-bar {
+  width: 80px;
+  height: 4px;
+  background: #1a1a1a;
+  border-radius: 2px;
+  margin: 6px auto 10px;
+  flex-shrink: 0;
+}
+
+/* ── STATUS BAR ── */
+.ss-phone__status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 4px 4px;
+  flex-shrink: 0;
+}
+.ss-phone__time {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1A1A2E;
+  font-family: var(--font-body);
+}
+.ss-phone__status-icons {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ── GOOGLE NAV ── */
+.ss-phone__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px;
+  border-bottom: 1px solid #e8eaed;
+  flex-shrink: 0;
+  gap: 6px;
+}
+.ss-phone__nav-left { display: flex; align-items: center; }
+.ss-phone__nav-tabs { display: flex; align-items: center; gap: 0; flex: 1; justify-content: center; }
+.ss-phone__tab {
+  font-size: 10px;
+  font-weight: 600;
+  color: #777;
+  padding: 4px 8px;
+  font-family: var(--font-body);
+  letter-spacing: 0.5px;
+}
+.ss-phone__tab--active {
+  color: #1a73e8;
+  border-bottom: 2px solid #1a73e8;
+}
+.ss-phone__nav-right { display: flex; align-items: center; }
+.ss-phone__signin {
+  font-size: 10px;
+  font-weight: 600;
+  color: white;
+  background: #1a73e8;
+  border-radius: 4px;
+  padding: 3px 7px;
+  font-family: var(--font-body);
+}
+
+/* ── GOOGLE LOGO ── */
+.ss-phone__logo {
+  font-family: var(--font-heading);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  text-align: center;
+  padding: 16px 0 14px;
+  flex-shrink: 0;
+}
+
+/* ── SEARCH BAR ── */
+.ss-phone__search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #ddd;
+  border-radius: 24px;
+  padding: 10px 14px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.ss-phone__search-icon { flex-shrink: 0; }
+.ss-phone__typed {
+  font-size: 13px;
+  color: #202124;
+  font-family: var(--font-body);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+.ss-phone__cursor {
+  display: inline-block;
+  width: 1.5px;
+  height: 14px;
+  background: #5B4FCF;
+  border-radius: 1px;
+  flex-shrink: 0;
+  animation: ss-cursor-blink 0.75s step-end infinite;
+}
+@keyframes ss-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ── RESULTS ── */
+.ss-phone__results {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.ss-phone__results--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.ss-phone__result {
+  padding: 10px 2px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ss-phone__result:last-child { border-bottom: none; }
+.ss-phone__result-url {
+  display: block;
+  font-size: 9px;
+  color: #1a6a34;
+  font-family: var(--font-body);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ss-phone__result-title {
+  display: block;
+  font-size: 12px;
+  color: #1a0dab;
+  font-family: var(--font-body);
+  font-weight: 600;
+  line-height: 1.35;
+}
+.ss-phone__result-snippet {
+  display: block;
+  font-size: 10px;
+  color: #545454;
+  font-family: var(--font-body);
+  line-height: 1.5;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .ss__card {
+    grid-template-columns: 1fr;
+    padding: 52px 36px;
+    gap: 48px;
+  }
+  .ss__right { order: -1; }
+}
+
+@media (max-width: 480px) {
+  .ss__card { padding: 40px 20px; border-radius: 16px; }
+  .ss__tags { gap: 8px; }
+  .ss__tag  { font-size: 13px; padding: 8px 14px; }
+  .ss-phone { width: 260px; height: 520px; }
+  .ss-phone__island { width: 90px; height: 26px; }
+  .ss-phone__logo { font-size: 26px; }
+}
