@@ -108,9 +108,17 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Database migration skipped: {ex.Message}");
+    }
 }
+
+app.Run();

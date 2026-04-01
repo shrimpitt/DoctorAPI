@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using DoctorAPI.Data;
 using DoctorAPI.DTOs;
 using DoctorAPI.Models;
@@ -19,7 +20,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
             var orders = await _context.Orders
@@ -29,8 +30,8 @@ namespace DoctorAPI.Controllers
             return Ok(orders);
         }
 
-        [HttpGet("{id}")]
-        [Authorize]
+        [HttpGet("{id:long}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> GetOrderById(long id)
         {
             var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
@@ -50,9 +51,14 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult> CreateOrder(CreateOrderDto dto)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !long.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "User is not authenticated" });
+
             if (dto.Items == null || dto.Items.Count == 0)
                 return BadRequest(new { message = "Заказ должен содержать хотя бы один товар" });
 
@@ -95,7 +101,8 @@ namespace DoctorAPI.Controllers
                 Status = "pending",
                 PaymentStatus = "pending",
                 CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                UpdatedAt = DateTime.UtcNow,
+                UserId = userId
             };
 
             _context.Orders.Add(order);
@@ -118,8 +125,51 @@ namespace DoctorAPI.Controllers
             });
         }
 
-        [HttpPatch("{id}/status")]
-        [Authorize]
+        [HttpGet("my")]
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> GetMyOrders()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            var orders = await _context.Orders
+                .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
+
+            return Ok(orders);
+        }
+
+        [HttpGet("my/{id:long}")]
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> GetMyOrderById(long id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
+
+            if (order == null)
+                return NotFound(new { message = "Заказ не найден" });
+
+            var items = await _context.OrderItems
+                .Where(x => x.OrderId == id)
+                .ToListAsync();
+
+            return Ok(new
+            {
+                order,
+                items
+            });
+        }
+
+        [HttpPatch("{id:long}/status")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateOrderStatus(long id, UpdateOrderStatusDto dto)
         {
             var order = await _context.Orders.FindAsync(id);

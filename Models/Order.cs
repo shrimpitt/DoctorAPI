@@ -43,5 +43,10 @@ namespace DoctorAPI.Models
 
         [Column("updated_at")]
         public DateTime UpdatedAt { get; set; }
+
+        [Column("user_id")]
+        public long? UserId { get; set; }
+
+        public User? User { get; set; }
     }
 }
