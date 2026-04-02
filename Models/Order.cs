@@ -38,6 +38,24 @@ namespace DoctorAPI.Models
         [Column("payment_status")]
         public string PaymentStatus { get; set; }
 
+        [Column("payment_method")]
+        public string? PaymentMethod { get; set; }
+
+        [Column("payment_provider")]
+        public string? PaymentProvider { get; set; }
+
+        [Column("external_payment_id")]
+        public string? ExternalPaymentId { get; set; }
+
+        [Column("payment_url")]
+        public string? PaymentUrl { get; set; }
+
+        [Column("payment_session_id")]
+        public string? PaymentSessionId { get; set; }
+
+        [Column("paid_at")]
+        public DateTime? PaidAt { get; set; }
+
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
 

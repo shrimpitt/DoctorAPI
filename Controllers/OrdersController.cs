@@ -99,7 +99,7 @@ namespace DoctorAPI.Controllers
                 Comment = dto.Comment,
                 TotalAmount = totalAmount,
                 Status = "pending",
-                PaymentStatus = "pending",
+                PaymentStatus = "unpaid",
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 UserId = userId
@@ -168,6 +168,110 @@ namespace DoctorAPI.Controllers
             });
         }
 
+        [HttpPost("{id:long}/payment/init")]
+        [Authorize(Roles = "User,user")]
+        public async Task<ActionResult<OrderPaymentResponseDto>> InitPayment(long id, [FromBody] InitOrderPaymentDto dto)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !long.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "User is not authenticated" });
+
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
+
+            if (order == null)
+                return NotFound(new { message = "Заказ не найден" });
+
+            if (order.Status == "cancelled")
+                return BadRequest(new { message = "Отмененный заказ нельзя оплатить" });
+
+            if (order.PaymentStatus == "paid")
+                return BadRequest(new { message = "Заказ уже оплачен" });
+
+            order.Status = "awaiting_payment";
+            order.PaymentStatus = "pending";
+            order.PaymentMethod = dto.PaymentMethod;
+            order.PaymentProvider = "cloudpayments";
+            order.PaymentSessionId = Guid.NewGuid().ToString("N");
+            order.ExternalPaymentId = null;
+            order.PaymentUrl = null;
+            order.PaidAt = null;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(MapPaymentResponse(order));
+        }
+
+        [HttpPost("{id:long}/payment/mock-success")]
+        [Authorize(Roles = "User,user")]
+        public async Task<ActionResult<OrderPaymentResponseDto>> MockPaymentSuccess(long id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !long.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "User is not authenticated" });
+
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
+
+            if (order == null)
+                return NotFound(new { message = "Заказ не найден" });
+
+            if (order.Status == "cancelled")
+                return BadRequest(new { message = "Отмененный заказ нельзя оплатить" });
+
+            if (order.PaymentStatus == "paid")
+                return BadRequest(new { message = "Заказ уже оплачен" });
+
+            if (order.PaymentStatus != "pending")
+                return BadRequest(new { message = "Оплата не инициализирована" });
+
+            order.Status = "paid";
+            order.PaymentStatus = "paid";
+            order.ExternalPaymentId = $"mock_{Guid.NewGuid():N}";
+            order.PaidAt = DateTime.UtcNow;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(MapPaymentResponse(order));
+        }
+
+        [HttpPost("{id:long}/payment/mock-fail")]
+        [Authorize(Roles = "User,user")]
+        public async Task<ActionResult<OrderPaymentResponseDto>> MockPaymentFail(long id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !long.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "User is not authenticated" });
+
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
+
+            if (order == null)
+                return NotFound(new { message = "Заказ не найден" });
+
+            if (order.Status == "cancelled")
+                return BadRequest(new { message = "Отмененный заказ нельзя оплатить" });
+
+            if (order.PaymentStatus == "paid")
+                return BadRequest(new { message = "Заказ уже оплачен" });
+
+            if (order.PaymentStatus != "pending")
+                return BadRequest(new { message = "Оплата не инициализирована" });
+
+            order.Status = "pending";
+            order.PaymentStatus = "failed";
+            order.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(MapPaymentResponse(order));
+        }
+
         [HttpPatch("{id:long}/status")]
         [Authorize(Roles = "Admin,admin")]
         public async Task<ActionResult> UpdateOrderStatus(long id, UpdateOrderStatusDto dto)
@@ -183,6 +287,22 @@ namespace DoctorAPI.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Статус заказа обновлен" });
+        }
+
+        private static OrderPaymentResponseDto MapPaymentResponse(Order order)
+        {
+            return new OrderPaymentResponseDto
+            {
+                OrderId = order.Id,
+                Status = order.Status,
+                PaymentStatus = order.PaymentStatus,
+                PaymentMethod = order.PaymentMethod,
+                PaymentProvider = order.PaymentProvider,
+                PaymentSessionId = order.PaymentSessionId,
+                ExternalPaymentId = order.ExternalPaymentId,
+                PaymentUrl = order.PaymentUrl,
+                PaidAt = order.PaidAt
+            };
         }
     }
 }
