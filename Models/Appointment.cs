@@ -14,6 +14,11 @@ namespace DoctorAPI.Models
         [Column("schedule_slot_id")]
         public long? ScheduleSlotId { get; set; }
 
+        [Column("user_id")]
+        public long? UserId { get; set; }
+
+        public User? User { get; set; }
+
         [Column("full_name")]
         public string FullName { get; set; }
 

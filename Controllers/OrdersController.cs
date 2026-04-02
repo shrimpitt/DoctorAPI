@@ -20,7 +20,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,admin")]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
             var orders = await _context.Orders
@@ -31,7 +31,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpGet("{id:long}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,admin")]
         public async Task<ActionResult> GetOrderById(long id)
         {
             var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id);
@@ -51,7 +51,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,user")]
         public async Task<ActionResult> CreateOrder(CreateOrderDto dto)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -126,7 +126,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpGet("my")]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,user")]
         public async Task<IActionResult> GetMyOrders()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -143,7 +143,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpGet("my/{id:long}")]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,user")]
         public async Task<IActionResult> GetMyOrderById(long id)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -169,7 +169,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpPatch("{id:long}/status")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,admin")]
         public async Task<ActionResult> UpdateOrderStatus(long id, UpdateOrderStatusDto dto)
         {
             var order = await _context.Orders.FindAsync(id);

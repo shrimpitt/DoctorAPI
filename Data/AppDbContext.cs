@@ -69,6 +69,16 @@ namespace DoctorAPI.Data
                     .HasForeignKey(e => e.UserId)
                     .OnDelete(DeleteBehavior.SetNull);
             });
+
+            modelBuilder.Entity<Appointment>(entity =>
+            {
+                entity.Property(e => e.UserId).HasColumnName("user_id");
+
+                entity.HasOne(e => e.User)
+                    .WithMany()
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.SetNull);
+            });
         }
     }
 }

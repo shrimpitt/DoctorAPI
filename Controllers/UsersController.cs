@@ -99,7 +99,7 @@ namespace DoctorAPI.Controllers
             });
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,user")]
         [HttpGet("me")]
         public async Task<IActionResult> GetMe()
         {

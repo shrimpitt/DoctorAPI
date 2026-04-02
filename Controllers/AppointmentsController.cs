@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using DoctorAPI.Data;
 using DoctorAPI.Models;
 using DoctorAPI.DTOs;
@@ -19,12 +20,19 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize(Roles = "User,user")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> CreateAppointment([FromBody] CreateAppointmentDto dto)
         {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !long.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+
             var slot = await _context.DoctorScheduleSlots
                 .FirstOrDefaultAsync(s => s.Id == dto.ScheduleSlotId);
 
@@ -61,6 +69,7 @@ namespace DoctorAPI.Controllers
                 Phone = dto.Phone,
                 Email = dto.Email,
                 Comment = dto.Comment,
+                UserId = userId,
                 Status = "pending",
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
@@ -75,7 +84,7 @@ namespace DoctorAPI.Controllers
 
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetAppointmentById), new { id = appointment.Id }, new
+            return Ok(new
             {
                 message = "Запись успешно создана",
                 appointmentId = appointment.Id
@@ -83,7 +92,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "Admin,admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> GetAppointments(
             [FromQuery] string? status,
@@ -137,8 +146,8 @@ namespace DoctorAPI.Controllers
             });
         }
 
-        [HttpGet("{id}")]
-        [Authorize]
+        [HttpGet("{id:long}")]
+        [Authorize(Roles = "Admin,admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Appointment>> GetAppointmentById(long id)
@@ -153,8 +162,8 @@ namespace DoctorAPI.Controllers
             return Ok(appointment);
         }
 
-        [HttpPatch("{id}/status")]
-        [Authorize]
+        [HttpPatch("{id:long}/status")]
+        [Authorize(Roles = "Admin,admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -202,6 +211,91 @@ namespace DoctorAPI.Controllers
             return Ok(new
             {
                 message = "Статус записи обновлен",
+                appointmentId = appointment.Id,
+                status = appointment.Status
+            });
+        }
+
+        [HttpGet("my")]
+        [Authorize(Roles = "User,user")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> GetMyAppointments()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            var appointments = await _context.Appointments
+                .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
+
+            return Ok(appointments);
+        }
+
+        [HttpGet("my/{id:long}")]
+        [Authorize(Roles = "User,user")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> GetMyAppointmentById(long id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            var appointment = await _context.Appointments
+                .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
+
+            if (appointment == null)
+                return NotFound(new { message = "Запись не найдена" });
+
+            return Ok(appointment);
+        }
+
+        [HttpPatch("my/{id:long}/cancel")]
+        [Authorize(Roles = "User,user")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> CancelMyAppointment(long id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !long.TryParse(userIdClaim, out var userId))
+                return Unauthorized();
+
+            var appointment = await _context.Appointments
+                .FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
+
+            if (appointment == null)
+                return NotFound(new { message = "Запись не найдена" });
+
+            var oldStatus = appointment.Status?.ToLower();
+            var newStatus = "cancelled";
+
+            if (oldStatus == newStatus)
+                return BadRequest(new { message = "Запись уже отменена" });
+
+            var slot = await _context.DoctorScheduleSlots
+                .FirstOrDefaultAsync(s => s.Id == appointment.ScheduleSlotId);
+
+            appointment.Status = newStatus;
+            appointment.UpdatedAt = DateTime.UtcNow;
+
+            if (slot != null)
+            {
+                slot.IsAvailable = true;
+                slot.ReservedByAppointmentId = null;
+                slot.UpdatedAt = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Запись отменена",
                 appointmentId = appointment.Id,
                 status = appointment.Status
             });
