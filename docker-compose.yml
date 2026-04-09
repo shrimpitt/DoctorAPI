@@ -23,6 +23,11 @@
       ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=DoctorDB;Username=postgres;Password=1234
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
+      PayPal__ClientId: ${PAYPAL_CLIENT_ID}
+      PayPal__ClientSecret: ${PAYPAL_CLIENT_SECRET}
+      PayPal__BaseUrl: https://api-m.sandbox.paypal.com
+      PayPal__UseFixedDemoAmount: true
+      PayPal__FixedDemoAmountUsd: 10.00
     ports:
       - "8080:8080"
 

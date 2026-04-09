@@ -5,6 +5,9 @@ using System.Security.Claims;
 using DoctorAPI.Data;
 using DoctorAPI.DTOs;
 using DoctorAPI.Models;
+using DoctorAPI.Options;
+using DoctorAPI.Services;
+using Microsoft.Extensions.Options;
 
 namespace DoctorAPI.Controllers
 {
@@ -13,10 +16,14 @@ namespace DoctorAPI.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IPayPalService _payPalService;
+        private readonly PayPalOptions _payPalOptions;
 
-        public OrdersController(AppDbContext context)
+        public OrdersController(AppDbContext context, IPayPalService payPalService, IOptions<PayPalOptions> payPalOptions)
         {
             _context = context;
+            _payPalService = payPalService;
+            _payPalOptions = payPalOptions.Value;
         }
 
         [HttpGet]
@@ -270,6 +277,114 @@ namespace DoctorAPI.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(MapPaymentResponse(order));
+        }
+
+        [HttpPost("{id:long}/payment/paypal/create-order")]
+        [Authorize(Roles = "User,user")]
+        public async Task<ActionResult<CreatePayPalOrderResponseDto>> CreatePayPalOrder(long id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !long.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "User is not authenticated" });
+
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
+
+            if (order == null)
+                return NotFound(new { message = "Заказ не найден" });
+
+            if (order.Status == "cancelled")
+                return BadRequest(new { message = "Отмененный заказ нельзя оплатить" });
+
+            if (order.PaymentStatus == "paid")
+                return BadRequest(new { message = "Заказ уже оплачен" });
+
+            var amountForPayPal = _payPalOptions.UseFixedDemoAmount
+                ? _payPalOptions.FixedDemoAmountUsd
+                : order.TotalAmount;
+
+            try
+            {
+                var (payPalOrderId, payPalStatus) = await _payPalService.CreateOrderAsync(amountForPayPal, "USD");
+
+                order.Status = "awaiting_payment";
+                order.PaymentStatus = "pending";
+                order.PaymentProvider = "paypal";
+                order.PaymentMethod = "paypal";
+                order.PaymentSessionId = payPalOrderId;
+                order.ExternalPaymentId = null;
+                order.PaidAt = null;
+                order.UpdatedAt = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new CreatePayPalOrderResponseDto
+                {
+                    PayPalOrderId = payPalOrderId,
+                    Status = payPalStatus
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(502, new { message = "PayPal create order failed", details = ex.Message });
+            }
+        }
+
+        [HttpPost("{id:long}/payment/paypal/capture")]
+        [Authorize(Roles = "User,user")]
+        public async Task<ActionResult<CapturePayPalOrderResponseDto>> CapturePayPalOrder(long id, [FromBody] CapturePayPalOrderRequestDto dto)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !long.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "User is not authenticated" });
+
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == id && o.UserId == userId);
+
+            if (order == null)
+                return NotFound(new { message = "Заказ не найден" });
+
+            if (order.Status == "cancelled")
+                return BadRequest(new { message = "Отмененный заказ нельзя оплатить" });
+
+            if (order.PaymentStatus == "paid")
+                return BadRequest(new { message = "Заказ уже оплачен" });
+
+            if (string.IsNullOrWhiteSpace(order.PaymentSessionId) || order.PaymentSessionId != dto.PayPalOrderId)
+                return BadRequest(new { message = "Неверный PayPal order id" });
+
+            var result = await _payPalService.CaptureOrderAsync(dto.PayPalOrderId);
+
+            if (!result.Success)
+            {
+                order.Status = "pending";
+                order.PaymentStatus = "failed";
+                order.UpdatedAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+
+                return BadRequest(new { message = "PayPal capture failed", paypalStatus = result.Status });
+            }
+
+            order.Status = "paid";
+            order.PaymentStatus = "paid";
+            order.PaymentProvider = "paypal";
+            order.PaymentMethod = "paypal";
+            order.ExternalPaymentId = result.CaptureId ?? dto.PayPalOrderId;
+            order.PaidAt = DateTime.UtcNow;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new CapturePayPalOrderResponseDto
+            {
+                OrderId = order.Id,
+                Status = order.Status,
+                PaymentStatus = order.PaymentStatus,
+                PaymentProvider = order.PaymentProvider,
+                PaymentMethod = order.PaymentMethod,
+                ExternalPaymentId = order.ExternalPaymentId,
+                PaidAt = order.PaidAt
+            });
         }
 
         [HttpPatch("{id:long}/status")]

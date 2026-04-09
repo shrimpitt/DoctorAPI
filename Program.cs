@@ -1,5 +1,7 @@
 using System.Text;
 using DoctorAPI.Data;
+using DoctorAPI.Options;
+using DoctorAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -47,6 +49,9 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.Configure<PayPalOptions>(builder.Configuration.GetSection("PayPal"));
+builder.Services.AddHttpClient<IPayPalService, PayPalService>();
 
 // JWT
 var jwtKey = builder.Configuration["Jwt:Key"];
