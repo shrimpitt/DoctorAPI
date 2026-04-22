@@ -74,7 +74,22 @@
 .checkout-summary__total strong { font-size: 20px; }
 
 @media (max-width: 900px) {
-  .checkout-page__inner { grid-template-columns: 1fr; }
+  .checkout-page__inner { grid-template-columns: 1fr; gap: 24px; padding-top: 32px; }
   .checkout-summary { position: static; order: -1; }
   .checkout-form { padding: 24px; }
+}
+
+@media (max-width: 768px) {
+  .checkout-page__inner { padding: 24px 16px 16px; gap: 16px; }
+  .checkout-form { padding: 20px; }
+  .checkout-form__title { font-size: 22px; }
+  .checkout-summary { padding: 20px; }
+  .checkout-summary__title { font-size: 18px; margin-bottom: 16px; }
+}
+
+@media (max-width: 480px) {
+  .checkout-page__inner { padding: 16px 12px; }
+  .checkout-form { padding: 16px; gap: 16px; }
+  .checkout-form__submit { padding: 16px; font-size: 14px; }
+  .checkout-summary { padding: 16px; }
 }

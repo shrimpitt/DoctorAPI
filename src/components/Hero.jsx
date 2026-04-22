@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "./Hero.css";
@@ -117,13 +118,13 @@ export default function Hero() {
           {/* Stats */}
           <div className="hero__stats">
             {stats.map((s, i) => (
-              <>
-                {i > 0 && <div className="hero__stats-divider" key={`d${i}`} />}
-                <div className="hero__stat" key={i}>
+              <React.Fragment key={i}>
+                {i > 0 && <div className="hero__stats-divider" />}
+                <div className="hero__stat">
                   <span className="hero__stat-num">{s.num}</span>
                   <span className="hero__stat-label">{s.label}</span>
                 </div>
-              </>
+              </React.Fragment>
             ))}
           </div>
         </div>

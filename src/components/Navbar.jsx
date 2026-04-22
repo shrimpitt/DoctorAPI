@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import { useAuth } from "../context/AuthContext";
+import { useUserAuth } from "../context/UserAuthContext";
 import CartSidebar from "./shop/CartSidebar";
 import SearchBar from "./SearchBar";
 import "./Navbar.css";
@@ -18,7 +18,7 @@ export default function Navbar({ activeSection, setActiveSection }) {
   const [menuOpen,  setMenuOpen]  = useState(false);
   const [cartOpen,  setCartOpen]  = useState(false);
   const { totalCount } = useCart();
-  const { user, isAuthed, isAdmin, logout } = useAuth();
+  const { user, isAuthenticated, logout } = useUserAuth();
   const location = useLocation();
   const navigate  = useNavigate();
   const isLanding = location.pathname === "/";
@@ -39,7 +39,16 @@ export default function Navbar({ activeSection, setActiveSection }) {
     setMenuOpen(false);
   };
 
-  const handleLogout = () => { logout(); navigate("/"); setMenuOpen(false); };
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+    setMenuOpen(false);
+  };
+
+  // First letter of fullName for avatar
+  const avatarLetter = user?.fullName?.[0]?.toUpperCase() ?? "?";
+  // First word of fullName for compact display
+  const displayName  = user?.fullName?.split(" ")[0] ?? "";
 
   return (
     <>
@@ -58,7 +67,7 @@ export default function Navbar({ activeSection, setActiveSection }) {
             </div>
           </Link>
 
-          {/* Links */}
+          {/* Section links */}
           <ul className={`navbar__links ${menuOpen ? "navbar__links--open" : ""}`}>
             {sectionLinks.map((link) => (
               <li key={link.id}>
@@ -82,7 +91,11 @@ export default function Navbar({ activeSection, setActiveSection }) {
             <SearchBar />
 
             {/* Cart */}
-            <button className="navbar__cart" onClick={() => { setCartOpen(true); setMenuOpen(false); }} aria-label="Корзина">
+            <button
+              className="navbar__cart"
+              onClick={() => { setCartOpen(true); setMenuOpen(false); }}
+              aria-label="Корзина"
+            >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                 <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
                 <path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.99-1.61L23 6H6"/>
@@ -90,22 +103,14 @@ export default function Navbar({ activeSection, setActiveSection }) {
               {totalCount > 0 && <span className="navbar__cart-badge">{totalCount}</span>}
             </button>
 
-            {/* Auth */}
-            {isAuthed ? (
+            {/* User auth area */}
+            {isAuthenticated ? (
               <div className="navbar__user">
-                {isAdmin ? (
-                  <Link to="/admin" className="navbar__link navbar__link--admin" onClick={() => setMenuOpen(false)}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
-                    Панель
-                  </Link>
-                ) : (
-                  <Link to="/profile" className="navbar__user-name" onClick={() => setMenuOpen(false)}>
-                    <div className="navbar__user-avatar">{user?.name?.[0]?.toUpperCase()}</div>
-                    <span>{user?.name?.split(" ")[0]}</span>
-                  </Link>
-                )}
+                {/* Link to profile page showing user's first name */}
+                <Link to="/profile" className="navbar__user-name" onClick={() => setMenuOpen(false)}>
+                  <div className="navbar__user-avatar">{avatarLetter}</div>
+                  <span>{displayName}</span>
+                </Link>
                 <button className="navbar__logout" onClick={handleLogout} title="Выйти">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>

@@ -1,29 +1,55 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useUserAuth } from "../context/UserAuthContext";
 import "./AuthPages.css";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login }  = useUserAuth();
   const navigate   = useNavigate();
   const location   = useLocation();
+  // Return to the page the user tried to visit, or home
   const from       = location.state?.from?.pathname || "/";
 
-  const [form, setForm]   = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [form, setForm]     = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState("");
+  const [loading, setLoading]   = useState(false);
 
-  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+  const set = (k, v) => {
+    setForm(f => ({ ...f, [k]: v }));
+    setErrors(e => ({ ...e, [k]: "" }));
+    setApiError("");
+  };
+
+  // Client-side validation before hitting the API
+  const validate = () => {
+    const e = {};
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      e.email = "Введите корректный email";
+    }
+    if (form.password.length < 6) {
+      e.password = "Пароль — минимум 6 символов";
+    }
+    return e;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    const errs = validate();
+    if (Object.keys(errs).length) { setErrors(errs); return; }
+
     setLoading(true);
-    await new Promise(r => setTimeout(r, 300));
-    const result = login(form.email, form.password);
-    setLoading(false);
-    if (result.error) { setError(result.error); return; }
-    navigate(result.user.role === "admin" ? "/admin" : from, { replace: true });
+    try {
+      await login(form.email, form.password);
+      navigate(from, { replace: true });
+    } catch (err) {
+      // Display server error message or a generic fallback
+      setApiError(err.message.includes("401") || err.message.includes("400")
+        ? "Неверный email или пароль"
+        : "Ошибка входа. Попробуйте позже.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -52,6 +78,7 @@ export default function LoginPage() {
               required
               autoFocus
             />
+            {errors.email && <span className="field-error">{errors.email}</span>}
           </div>
 
           <div className="form-group">
@@ -63,9 +90,10 @@ export default function LoginPage() {
               onChange={e => set("password", e.target.value)}
               required
             />
+            {errors.password && <span className="field-error">{errors.password}</span>}
           </div>
 
-          {error && <p className="auth-error">{error}</p>}
+          {apiError && <p className="auth-error">{apiError}</p>}
 
           <button type="submit" className="btn-primary auth-submit" disabled={loading}>
             {loading ? "Входим…" : "Войти"}
@@ -74,14 +102,10 @@ export default function LoginPage() {
 
         <p className="auth-switch">
           Нет аккаунта?{" "}
-          <Link to="/register">Зарегистрироваться</Link>
+          <Link to="/register" state={{ from: location.state?.from }}>
+            Зарегистрироваться
+          </Link>
         </p>
-
-        <div className="auth-hint">
-          <strong>Демо-данные:</strong><br />
-          Клиент: зарегистрируйтесь сами<br />
-          Администратор: admin@clinic.kz / admin123
-        </div>
       </div>
     </div>
   );

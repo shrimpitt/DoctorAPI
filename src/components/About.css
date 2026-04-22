@@ -305,6 +305,16 @@
 }
 
 @media (max-width: 480px) {
+  .about__left  { padding: 48px 20px 32px; }
+  .about__right { padding: 32px 20px 48px; }
+  .about__title { font-size: 36px; margin-bottom: 28px; }
+  .about__cards { grid-template-columns: 1fr; gap: 12px; }
+  .about__card  { padding: 20px; }
+  .about__dirs  { gap: 8px; }
+  .about__dir-tag { font-size: 13px; padding: 7px 14px; }
+  .about-stats { flex-direction: column; }
+  .about-stats__divider { display: none; }
+  .about-stats__item { padding: 28px 20px; }
   .about-search__body { grid-template-columns: 1fr; gap: 52px; }
   .about-search__phone-wrap { order: -1; }
   .about-search__tags { gap: 8px; }

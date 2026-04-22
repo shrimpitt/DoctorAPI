@@ -132,3 +132,14 @@
   font-size: 15px;
 }
 .cart-sidebar__total strong { font-size: 18px; }
+
+@media (max-width: 480px) {
+  /* Full-screen cart on small mobile */
+  .cart-sidebar {
+    width: 100vw;
+    border-radius: 0;
+  }
+  .cart-sidebar__header { padding: 20px 16px 16px; }
+  .cart-sidebar__list   { padding: 12px 16px; }
+  .cart-sidebar__footer { padding: 16px; }
+}
