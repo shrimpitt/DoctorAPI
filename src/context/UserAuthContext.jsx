@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { loginUser, registerUser, getCurrentUser } from "../api";
+import { loginUser, registerUser } from "../api";
 
 const UserAuthContext = createContext(null);
 
@@ -25,21 +25,20 @@ export function UserAuthProvider({ children }) {
 
   /**
    * Login with email + password via backend API.
-   * Stores JWT in localStorage["user_token"].
-   * Throws on error so the calling page can display the message.
+   * POST /api/Users/login
+   * Response shape: { token, userId, fullName, email, role }
    */
   const login = async (email, password) => {
     const data = await loginUser(email, password);
 
-    const token = data.token || data.accessToken;
-    if (!token) throw new Error("Сервер не вернул токен");
+    if (!data.token) throw new Error("Сервер не вернул токен");
 
-    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(TOKEN_KEY, data.token);
 
     const userData = {
-      id:       data.id       ?? data.userId ?? null,
-      email:    data.email    ?? email,
-      fullName: data.fullName ?? data.name   ?? "",
+      id:       data.userId,   // UserAuthResponseDto.UserId
+      email:    data.email,
+      fullName: data.fullName,
     };
     localStorage.setItem(USER_KEY, JSON.stringify(userData));
     setUser(userData);
@@ -48,21 +47,21 @@ export function UserAuthProvider({ children }) {
 
   /**
    * Register a new user via backend API.
-   * Expects data: { fullName, email, password }
-   * Automatically logs in if the server returns a token.
+   * POST /api/Users/register
+   * Body:     { fullName, email, password }
+   * Response: { token, userId, fullName, email, role }
    */
   const register = async (formData) => {
     const data = await registerUser(formData);
 
-    const token = data.token || data.accessToken;
-    if (token) {
-      localStorage.setItem(TOKEN_KEY, token);
+    if (data.token) {
+      localStorage.setItem(TOKEN_KEY, data.token);
     }
 
     const userData = {
-      id:       data.id       ?? data.userId      ?? null,
-      email:    data.email    ?? formData.email,
-      fullName: data.fullName ?? data.name         ?? formData.fullName,
+      id:       data.userId,
+      email:    data.email,
+      fullName: data.fullName,
     };
     localStorage.setItem(USER_KEY, JSON.stringify(userData));
     setUser(userData);
