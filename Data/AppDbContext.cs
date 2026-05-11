@@ -22,6 +22,8 @@ namespace DoctorAPI.Data
         public DbSet<DoctorEducation> DoctorEducations { get; set; }
         public DbSet<DoctorCertificate> DoctorCertificates { get; set; }
         public DbSet<Setting> Settings { get; set; }
+        public DbSet<HealthDiaryEntry> HealthDiaryEntries { get; set; }
+        public DbSet<HealthDiaryAiSummary> HealthDiaryAiSummaries { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -79,6 +81,24 @@ namespace DoctorAPI.Data
                     .HasForeignKey(e => e.UserId)
                     .OnDelete(DeleteBehavior.SetNull);
             });
+
+            modelBuilder.Entity<HealthDiaryEntry>()
+                .HasOne(h => h.User)
+                .WithMany()
+                .HasForeignKey(h => h.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<HealthDiaryAiSummary>()
+                .HasOne(s => s.User)
+                .WithMany()
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<HealthDiaryEntry>()
+                .HasIndex(h => new { h.UserId, h.EntryDate });
+
+            modelBuilder.Entity<HealthDiaryAiSummary>()
+                .HasIndex(s => new { s.UserId, s.CreatedAt });
         }
     }
 }
