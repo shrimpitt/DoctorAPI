@@ -3,17 +3,26 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useUserAuth } from "../context/UserAuthContext";
 import "./AuthPages.css";
 
+/** Parse the error text from the backend — may be JSON or plain string */
+function extractErrorMessage(rawMessage) {
+  try {
+    const parsed = JSON.parse(rawMessage);
+    return parsed.message || parsed.title || rawMessage;
+  } catch {
+    return rawMessage;
+  }
+}
+
 export default function RegisterPage() {
   const { register } = useUserAuth();
   const navigate     = useNavigate();
   const location     = useLocation();
-  // Return to the page the user originally wanted (passed through /login state)
   const from         = location.state?.from?.pathname || "/";
 
   const [form, setForm] = useState({
     fullName: "", email: "", password: "", confirm: "",
   });
-  const [errors, setErrors]   = useState({});
+  const [errors, setErrors]     = useState({});
   const [apiError, setApiError] = useState("");
   const [loading, setLoading]   = useState(false);
 
@@ -23,7 +32,6 @@ export default function RegisterPage() {
     setApiError("");
   };
 
-  // Client-side validation
   const validate = () => {
     const e = {};
     if (!form.fullName.trim())
@@ -51,9 +59,8 @@ export default function RegisterPage() {
       });
       navigate(from, { replace: true });
     } catch (err) {
-      setApiError(err.message.includes("409") || err.message.includes("400")
-        ? "Пользователь с таким email уже существует"
-        : "Ошибка регистрации. Попробуйте позже.");
+      console.error("Register error:", err.message);
+      setApiError(extractErrorMessage(err.message) || "Ошибка регистрации. Попробуйте позже.");
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useUserAuth } from "../context/UserAuthContext";
 import "./Hero.css";
 
 function RotatingBadge() {
@@ -19,7 +19,6 @@ function RotatingBadge() {
           </textPath>
         </text>
       </svg>
-      {/* Center icon */}
       <div className="hero__badge-center">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5B4FCF" strokeWidth="1.8">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
@@ -65,7 +64,11 @@ const stats = [
 ];
 
 export default function Hero() {
-  const { isAuthed, user } = useAuth();
+  // Use UserAuthContext — never AdminAuthContext here
+  const { isAuthenticated, user } = useUserAuth();
+
+  // First word of full name for the greeting
+  const firstName = user?.fullName?.split(" ")[0];
 
   return (
     <section className="hero">
@@ -83,11 +86,11 @@ export default function Hero() {
             Принимает онлайн и офлайн
           </div>
 
-          {/* Title with rotating badge on first line */}
-          {isAuthed ? (
+          {/* Title — personalised if user is logged in */}
+          {isAuthenticated && firstName ? (
             <h1 className="hero__title">
               Здравствуйте,{" "}
-              <em>{user?.name?.split(" ")[0]}</em>!<br />
+              <em>{firstName}</em>!<br />
               Ваше здоровье —<br />наш приоритет
             </h1>
           ) : (
@@ -132,7 +135,6 @@ export default function Hero() {
 
       {/* Right photo panel */}
       <div className="hero__right">
-        {/* Decorative branch SVG */}
         <svg className="hero__branches" viewBox="0 0 400 800" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M380 0 C360 80, 300 120, 280 200 C260 280, 310 320, 290 420 C270 520, 200 540, 220 640 C240 740, 300 760, 280 800" stroke="#9090a0" strokeWidth="1.5" strokeLinecap="round"/>
           <path d="M280 200 C320 180, 360 160, 380 140" stroke="#9090a0" strokeWidth="1" strokeLinecap="round"/>
@@ -147,7 +149,6 @@ export default function Hero() {
           <path d="M210 510 C230 535, 245 555, 240 580" stroke="#9090a0" strokeWidth="0.8" strokeLinecap="round"/>
         </svg>
 
-        {/* Rotating ring text */}
         <div className="hero__ring">
           <svg viewBox="0 0 300 300" className="hero__ring-svg">
             <defs>

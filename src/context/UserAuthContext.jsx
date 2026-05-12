@@ -1,84 +1,102 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { loginUser, registerUser } from "../api";
+import { loginUser, registerUser, getCurrentUser } from "../api";
 
 const UserAuthContext = createContext(null);
 
 const TOKEN_KEY = "user_token";
-const USER_KEY  = "user_data";
+
+/**
+ * Normalise the login/register response into a consistent user object.
+ * Handles both flat and nested shapes:
+ *   Flat:   { Token, UserId, FullName, Email, Role }
+ *   Nested: { Token, User: { Id, FullName, Email, Phone, Role } }
+ * ASP.NET Core serialises to camelCase by default, so also handles lowercase keys.
+ */
+function parseAuthResponse(data) {
+  const token = data.Token || data.token;
+
+  // Prefer nested User object if present, otherwise use the root object
+  const src = data.User || data.user || data;
+
+  const user = {
+    id:       src.Id       ?? src.id       ?? data.UserId ?? data.userId ?? null,
+    fullName: src.FullName ?? src.fullName ?? "",
+    email:    src.Email    ?? src.email    ?? "",
+    phone:    src.Phone    ?? src.phone    ?? "",
+    role:     src.Role     ?? src.role     ?? "User",
+  };
+
+  return { token, user };
+}
 
 export function UserAuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem(USER_KEY));
-    } catch {
-      return null;
-    }
-  });
+  const [user, setUser]       = useState(null);
+  // loading=true while we verify the stored token on mount
+  const [loading, setLoading] = useState(true);
 
-  // On mount: clear stale state if token is missing
   useEffect(() => {
-    if (!localStorage.getItem(TOKEN_KEY)) {
-      setUser(null);
-      localStorage.removeItem(USER_KEY);
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) {
+      setLoading(false);
+      return;
     }
+    // Token exists — restore user data from the backend
+    getCurrentUser()
+      .then(data => {
+        setUser({
+          id:       data.id       ?? data.Id       ?? null,
+          fullName: data.fullName ?? data.FullName ?? "",
+          email:    data.email    ?? data.Email    ?? "",
+          phone:    data.phone    ?? data.Phone    ?? "",
+          role:     data.role     ?? data.Role     ?? "User",
+        });
+      })
+      .catch(() => {
+        // Token expired or invalid — drop it silently
+        localStorage.removeItem(TOKEN_KEY);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   /**
-   * Login with email + password via backend API.
-   * POST /api/Users/login
-   * Response shape: { token, userId, fullName, email, role }
+   * Login with email + password.
+   * POST /api/Users/login → UserAuthResponseDto
+   * Throws on error so the calling page can display the message.
    */
   const login = async (email, password) => {
     const data = await loginUser(email, password);
-
-    if (!data.token) throw new Error("Сервер не вернул токен");
-
-    localStorage.setItem(TOKEN_KEY, data.token);
-
-    const userData = {
-      id:       data.userId,   // UserAuthResponseDto.UserId
-      email:    data.email,
-      fullName: data.fullName,
-    };
-    localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    const { token, user: userData } = parseAuthResponse(data);
+    if (!token) throw new Error("Сервер не вернул токен");
+    localStorage.setItem(TOKEN_KEY, token);
     setUser(userData);
     return userData;
   };
 
   /**
-   * Register a new user via backend API.
-   * POST /api/Users/register
-   * Body:     { fullName, email, password }
-   * Response: { token, userId, fullName, email, role }
+   * Register a new user.
+   * POST /api/Users/register → UserAuthResponseDto
    */
   const register = async (formData) => {
     const data = await registerUser(formData);
-
-    if (data.token) {
-      localStorage.setItem(TOKEN_KEY, data.token);
-    }
-
-    const userData = {
-      id:       data.userId,
-      email:    data.email,
-      fullName: data.fullName,
-    };
-    localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    const { token, user: userData } = parseAuthResponse(data);
+    if (token) localStorage.setItem(TOKEN_KEY, token);
     setUser(userData);
     return userData;
   };
 
-  /** Clear all user session data */
+  /**
+   * Clear user session.
+   * Removes ONLY user_token — never touches admin_token.
+   */
   const logout = () => {
     localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
     setUser(null);
   };
 
   const isAuthenticated = !!user && !!localStorage.getItem(TOKEN_KEY);
 
   return (
-    <UserAuthContext.Provider value={{ user, isAuthenticated, login, register, logout }}>
+    <UserAuthContext.Provider value={{ user, isAuthenticated, loading, login, register, logout }}>
       {children}
     </UserAuthContext.Provider>
   );

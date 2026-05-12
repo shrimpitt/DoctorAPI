@@ -3,15 +3,24 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useUserAuth } from "../context/UserAuthContext";
 import "./AuthPages.css";
 
+/** Parse the error text from the backend — may be JSON or plain string */
+function extractErrorMessage(rawMessage) {
+  try {
+    const parsed = JSON.parse(rawMessage);
+    return parsed.message || parsed.title || rawMessage;
+  } catch {
+    return rawMessage;
+  }
+}
+
 export default function LoginPage() {
   const { login }  = useUserAuth();
   const navigate   = useNavigate();
   const location   = useLocation();
-  // Return to the page the user tried to visit, or home
   const from       = location.state?.from?.pathname || "/";
 
-  const [form, setForm]     = useState({ email: "", password: "" });
-  const [errors, setErrors] = useState({});
+  const [form, setForm]         = useState({ email: "", password: "" });
+  const [errors, setErrors]     = useState({});
   const [apiError, setApiError] = useState("");
   const [loading, setLoading]   = useState(false);
 
@@ -21,15 +30,12 @@ export default function LoginPage() {
     setApiError("");
   };
 
-  // Client-side validation before hitting the API
   const validate = () => {
     const e = {};
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
       e.email = "Введите корректный email";
-    }
-    if (form.password.length < 6) {
+    if (form.password.length < 6)
       e.password = "Пароль — минимум 6 символов";
-    }
     return e;
   };
 
@@ -43,10 +49,9 @@ export default function LoginPage() {
       await login(form.email, form.password);
       navigate(from, { replace: true });
     } catch (err) {
-      // Display server error message or a generic fallback
-      setApiError(err.message.includes("401") || err.message.includes("400")
-        ? "Неверный email или пароль"
-        : "Ошибка входа. Попробуйте позже.");
+      // Log raw error for debugging, show parsed message to user
+      console.error("Login error:", err.message);
+      setApiError(extractErrorMessage(err.message) || "Ошибка входа. Попробуйте позже.");
     } finally {
       setLoading(false);
     }
