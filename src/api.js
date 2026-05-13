@@ -38,10 +38,20 @@ export const createScheduleSlot = (data) =>
   request("/api/doctor-schedule-slots", { method: "POST", body: JSON.stringify(data) });
 
 // ── Appointments ─────────────────────────────────────────
+// User creates appointment — backend reads userId from Bearer token
 export const createAppointment = (data) =>
-  request("/api/appointments", { method: "POST", body: JSON.stringify(data) });
+  request("/api/appointments", {
+    method:  "POST",
+    headers: userAuthHeaders(),
+    body:    JSON.stringify(data),
+  });
 
+// Admin: all appointments (admin_token)
 export const getAppointments = () => request("/api/appointments");
+
+// User: own appointments (user_token)
+export const getMyAppointments = () =>
+  request("/api/appointments/my", { headers: userAuthHeaders() });
 
 export const getAppointmentById = (id) => request(`/api/appointments/${id}`);
 

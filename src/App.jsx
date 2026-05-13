@@ -50,12 +50,11 @@ export default function App() {
                   <UserProtectedRoute><CheckoutPage /></UserProtectedRoute>
                 } />
 
-                {/* Order and Profile still use the legacy ProtectedRoute */}
                 <Route path="/order/:id" element={
-                  <ProtectedRoute><OrderPage /></ProtectedRoute>
+                  <UserProtectedRoute><OrderPage /></UserProtectedRoute>
                 } />
                 <Route path="/profile" element={
-                  <ProtectedRoute><ProfilePage /></ProtectedRoute>
+                  <UserProtectedRoute><ProfilePage /></UserProtectedRoute>
                 } />
 
                 {/* Admin panel — protected by AdminAuthContext internally */}

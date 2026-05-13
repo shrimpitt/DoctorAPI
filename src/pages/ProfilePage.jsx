@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { getAppointments, getOrders } from "../api";
+import { useUserAuth } from "../context/UserAuthContext";
+import { getMyAppointments, getMyOrders } from "../api";
 import Navbar from "../components/Navbar";
 import Spinner from "../components/ui/Spinner";
 import "./ProfilePage.css";
@@ -9,47 +9,48 @@ import "./ProfilePage.css";
 const TABS = ["Профиль", "Мои записи", "Мои заказы"];
 
 const STATUS_LABEL = {
-  pending:   "Ожидает",
-  confirmed: "Подтверждена",
-  cancelled: "Отменена",
-  completed: "Завершена",
-  new:       "Новый",
-  processing:"В обработке",
-  shipped:   "Отправлен",
-  delivered: "Доставлен",
+  pending:    "Ожидает",
+  confirmed:  "Подтверждена",
+  cancelled:  "Отменена",
+  completed:  "Завершена",
+  new:        "Новый",
+  processing: "В обработке",
+  shipped:    "Отправлен",
+  delivered:  "Доставлен",
 };
 const STATUS_CLASS = {
-  pending: "badge--gray", confirmed: "badge--blue",
-  cancelled: "badge--red",  completed: "badge--blue",
-  new: "badge--gray", processing: "badge--blue",
-  shipped: "badge--blue", delivered: "badge--blue",
+  pending:    "badge--gray",
+  confirmed:  "badge--blue",
+  cancelled:  "badge--red",
+  completed:  "badge--blue",
+  new:        "badge--gray",
+  processing: "badge--blue",
+  shipped:    "badge--blue",
+  delivered:  "badge--blue",
 };
 
 export default function ProfilePage() {
-  const { user, logout, updateProfile } = useAuth();
+  const { user, logout } = useUserAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState(0);
 
   const [appointments, setAppointments] = useState([]);
-  const [orders, setOrders] = useState([]);
-  const [loadingA, setLoadingA] = useState(false);
-  const [loadingO, setLoadingO] = useState(false);
-
-  const [editMode, setEditMode] = useState(false);
-  const [editForm, setEditForm] = useState({ name: user?.name || "", phone: user?.phone || "" });
+  const [orders, setOrders]             = useState([]);
+  const [loadingA, setLoadingA]         = useState(false);
+  const [loadingO, setLoadingO]         = useState(false);
 
   useEffect(() => {
     if (tab === 1 && appointments.length === 0) {
       setLoadingA(true);
-      getAppointments()
-        .then(setAppointments)
+      getMyAppointments()
+        .then(d => setAppointments(Array.isArray(d) ? d : d?.$values ?? d?.items ?? d?.data ?? []))
         .catch(() => setAppointments([]))
         .finally(() => setLoadingA(false));
     }
     if (tab === 2 && orders.length === 0) {
       setLoadingO(true);
-      getOrders()
-        .then(setOrders)
+      getMyOrders()
+        .then(d => setOrders(Array.isArray(d) ? d : d?.$values ?? d?.items ?? d?.data ?? []))
         .catch(() => setOrders([]))
         .finally(() => setLoadingO(false));
     }
@@ -57,9 +58,10 @@ export default function ProfilePage() {
 
   const handleLogout = () => { logout(); navigate("/"); };
 
-  const handleSaveProfile = () => {
-    updateProfile(editForm);
-    setEditMode(false);
+  const roleLabel = () => {
+    const r = (user?.role ?? "").toLowerCase();
+    if (r === "admin" || r === "administrator") return "Администратор";
+    return "Клиент";
   };
 
   return (
@@ -70,13 +72,11 @@ export default function ProfilePage() {
         {/* Sidebar */}
         <aside className="profile-sidebar">
           <div className="profile-avatar">
-            <span>{user?.name?.[0]?.toUpperCase() || "?"}</span>
+            <span>{user?.fullName?.[0]?.toUpperCase() || "?"}</span>
           </div>
-          <h2 className="profile-sidebar__name">{user?.name}</h2>
+          <h2 className="profile-sidebar__name">{user?.fullName}</h2>
           <p className="profile-sidebar__email">{user?.email}</p>
-          <span className="badge badge--blue profile-sidebar__role">
-            {user?.role === "admin" ? "Администратор" : "Клиент"}
-          </span>
+          <span className="badge badge--blue profile-sidebar__role">{roleLabel()}</span>
 
           <nav className="profile-nav">
             {TABS.map((t, i) => (
@@ -107,60 +107,26 @@ export default function ProfilePage() {
             <div className="profile-section">
               <div className="profile-section__header">
                 <h3>Личные данные</h3>
-                {!editMode && (
-                  <button className="btn-ghost" onClick={() => setEditMode(true)}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                      <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                    Редактировать
-                  </button>
-                )}
               </div>
 
-              {editMode ? (
-                <div className="profile-edit-form">
-                  <div className="form-group">
-                    <label>Имя</label>
-                    <input
-                      value={editForm.name}
-                      onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Телефон</label>
-                    <input
-                      value={editForm.phone}
-                      onChange={e => setEditForm(f => ({ ...f, phone: e.target.value }))}
-                    />
-                  </div>
-                  <div className="profile-edit-actions">
-                    <button className="btn-primary" onClick={handleSaveProfile}>Сохранить</button>
-                    <button className="btn-ghost" onClick={() => setEditMode(false)}>Отмена</button>
-                  </div>
+              <div className="profile-info-grid">
+                <div className="profile-info-item">
+                  <span className="profile-info-item__label">Имя</span>
+                  <span className="profile-info-item__value">{user?.fullName || "—"}</span>
                 </div>
-              ) : (
-                <div className="profile-info-grid">
-                  <div className="profile-info-item">
-                    <span className="profile-info-item__label">Имя</span>
-                    <span className="profile-info-item__value">{user?.name || "—"}</span>
-                  </div>
-                  <div className="profile-info-item">
-                    <span className="profile-info-item__label">Email</span>
-                    <span className="profile-info-item__value">{user?.email || "—"}</span>
-                  </div>
-                  <div className="profile-info-item">
-                    <span className="profile-info-item__label">Телефон</span>
-                    <span className="profile-info-item__value">{user?.phone || "Не указан"}</span>
-                  </div>
-                  <div className="profile-info-item">
-                    <span className="profile-info-item__label">Роль</span>
-                    <span className="profile-info-item__value">
-                      {user?.role === "admin" ? "Администратор" : "Клиент"}
-                    </span>
-                  </div>
+                <div className="profile-info-item">
+                  <span className="profile-info-item__label">Email</span>
+                  <span className="profile-info-item__value">{user?.email || "—"}</span>
                 </div>
-              )}
+                <div className="profile-info-item">
+                  <span className="profile-info-item__label">Телефон</span>
+                  <span className="profile-info-item__value">{user?.phone || "Не указан"}</span>
+                </div>
+                <div className="profile-info-item">
+                  <span className="profile-info-item__label">Роль</span>
+                  <span className="profile-info-item__value">{roleLabel()}</span>
+                </div>
+              </div>
 
               <div className="profile-quick-links">
                 <Link to="/shop" className="profile-quick-link">
@@ -211,7 +177,7 @@ export default function ProfilePage() {
                       <div className="profile-list-item__main">
                         <span className="profile-list-item__title">{a.fullName || a.full_name}</span>
                         <span className="profile-list-item__sub">
-                          {a.slotDate?.slice(0,10) || "—"} · {a.startTime?.slice(0,5) || ""}
+                          {a.slotDate?.slice(0, 10) || "—"} · {a.startTime?.slice(0, 5) || ""}
                         </span>
                       </div>
                       <span className={`badge ${STATUS_CLASS[a.status] || "badge--gray"}`}>
@@ -251,7 +217,7 @@ export default function ProfilePage() {
                       <div className="profile-list-item__main">
                         <span className="profile-list-item__title">Заказ #{o.id}</span>
                         <span className="profile-list-item__sub">
-                          {o.createdAt?.slice(0,10) || o.created_at?.slice(0,10) || "—"} ·{" "}
+                          {o.createdAt?.slice(0, 10) || o.created_at?.slice(0, 10) || "—"} ·{" "}
                           {Number(o.total || o.totalAmount || 0).toLocaleString("ru-RU")} ₸
                         </span>
                       </div>
