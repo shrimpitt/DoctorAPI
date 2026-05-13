@@ -77,13 +77,23 @@ export const updateOrderStatus = (id, status) =>
   });
 
 // ── Orders (user) ────────────────────────────────────────
-// POST /api/orders requires user token (Authorize Role=User)
-export const createOrder = (data) =>
-  request("/api/orders", {
-    method:  "POST",
-    headers: userAuthHeaders(),
-    body:    JSON.stringify(data),
+export async function createOrder(data) {
+  const res = await fetch(`${BASE_URL}/api/orders`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept":       "application/json",
+      ...userAuthHeaders(),
+    },
+    body: JSON.stringify(data),
   });
+  if (!res.ok) {
+    const errText = await res.text();
+    console.error("Order error:", errText);
+    throw new Error(errText);
+  }
+  return res.json();
+}
 
 // User's own order history
 export const getMyOrders    = () =>
@@ -206,3 +216,49 @@ export const capturePayPalOrder = (orderId, data) =>
     headers: userAuthHeaders(),
     body:    JSON.stringify(data),
   });
+
+// ── Health Diary (patient) ────────────────────────────────
+// All endpoints require user_token Bearer. camelCase per API contract.
+
+async function diaryFetch(path, options = {}) {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      "Accept":       "application/json",
+      ...userAuthHeaders(),
+      ...options.headers,
+    },
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    console.error(`Health Diary error [${res.status}]:`, err);
+    throw new Error(err);
+  }
+  if (res.status === 204) return null;
+  return res.json();
+}
+
+// POST /api/health-diary
+export const createDiaryEntry  = (payload) =>
+  diaryFetch("/api/health-diary", { method: "POST", body: JSON.stringify(payload) });
+
+// GET /api/health-diary/my
+export const getMyDiaryEntries = () =>
+  diaryFetch("/api/health-diary/my");
+
+// GET /api/health-diary/my/{id}
+export const getMyDiaryEntry   = (id) =>
+  diaryFetch(`/api/health-diary/my/${id}`);
+
+// PUT /api/health-diary/my/{id}
+export const updateDiaryEntry  = (id, payload) =>
+  diaryFetch(`/api/health-diary/my/${id}`, { method: "PUT", body: JSON.stringify(payload) });
+
+// DELETE /api/health-diary/my/{id}
+export const deleteDiaryEntry  = (id) =>
+  diaryFetch(`/api/health-diary/my/${id}`, { method: "DELETE" });
+
+// GET /api/health-diary/my/summary
+export const getMyDiarySummary = () =>
+  diaryFetch("/api/health-diary/my/summary");

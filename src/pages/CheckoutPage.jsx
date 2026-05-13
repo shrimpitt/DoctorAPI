@@ -25,18 +25,18 @@ export default function CheckoutPage() {
     setError("");
     try {
       const orderData = {
-        FullName:    form.fullName,
-        Phone:       form.phone,
-        Email:       form.email       || null,
-        City:        form.city        || null,
-        AddressLine: form.addressLine || null,
-        Comment:     form.comment     || null,
-        Items: items.map((i) => ({
-          ProductId: i.productId,
-          Quantity:  i.quantity,
+        fullName:    form.fullName,
+        phone:       form.phone,
+        email:       form.email       || null,
+        city:        form.city        || null,
+        addressLine: form.addressLine || null,
+        comment:     form.comment     || null,
+        items: items.map((i) => ({
+          productId: parseInt(i.productId, 10),
+          quantity:  Number(i.quantity),
         })),
       };
-      console.log("POST /api/orders →", orderData);
+      console.log("Order payload:", orderData);
       const res = await createOrder(orderData);
       clear();
       navigate(`/order/${res.orderId}`);

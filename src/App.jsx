@@ -15,6 +15,7 @@ import OrderPage         from "./pages/OrderPage";
 import LoginPage         from "./pages/LoginPage";
 import RegisterPage      from "./pages/RegisterPage";
 import ProfilePage       from "./pages/ProfilePage";
+import HealthDiaryPage  from "./pages/HealthDiaryPage";
 
 import AdminLayout       from "./pages/admin/AdminLayout";
 import AppointmentsAdmin from "./pages/admin/AppointmentsAdmin";
@@ -55,6 +56,9 @@ export default function App() {
                 } />
                 <Route path="/profile" element={
                   <UserProtectedRoute><ProfilePage /></UserProtectedRoute>
+                } />
+                <Route path="/health-diary" element={
+                  <UserProtectedRoute><HealthDiaryPage /></UserProtectedRoute>
                 } />
 
                 {/* Admin panel — protected by AdminAuthContext internally */}
