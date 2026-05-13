@@ -129,6 +129,23 @@ namespace DoctorAPI.Controllers
             return Ok(user);
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Admin,Doctor")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _context.Users
+                .OrderBy(x => x.FullName)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.FullName,
+                    x.Email
+                })
+                .ToListAsync();
+
+            return Ok(users);
+        }
+
         private string GenerateJwtToken(User user)
         {
             var jwtKey = _configuration["Jwt:Key"];
