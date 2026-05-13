@@ -217,6 +217,52 @@ export const capturePayPalOrder = (orderId, data) =>
     body:    JSON.stringify(data),
   });
 
+// ── Health Diary (admin) ─────────────────────────────────
+// All endpoints require admin_token Bearer.
+
+async function adminFetch(path, options = {}) {
+  const token = localStorage.getItem("admin_token");
+  const res = await fetch(`${BASE_URL}${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      "Accept":       "application/json",
+      ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+      ...options.headers,
+    },
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    console.error(`Admin API error [${res.status}] ${path}:`, err);
+    throw new Error(err);
+  }
+  if (res.status === 204) return null;
+  return res.json();
+}
+
+// GET /api/Users — list all registered users (admin token required).
+// Handles both plain array and {$values:[...]} wrapper from .NET.
+export async function getAllUsers() {
+  const data = await adminFetch("/api/Users");
+  return Array.isArray(data) ? data : (data?.$values ?? []);
+}
+
+// GET /api/health-diary/admin/user/{userId}
+export const getAdminUserDiary = (userId) =>
+  adminFetch(`/api/health-diary/admin/user/${userId}`);
+
+// GET /api/health-diary/admin/user/{userId}/summary
+export const getAdminUserDiarySummary = (userId) =>
+  adminFetch(`/api/health-diary/admin/user/${userId}/summary`);
+
+// POST /api/health-diary/admin/user/{userId}/ai-summary
+export const generateAiSummary = (userId) =>
+  adminFetch(`/api/health-diary/admin/user/${userId}/ai-summary`, { method: "POST" });
+
+// GET /api/health-diary/admin/user/{userId}/ai-summaries
+export const getAiSummaries = (userId) =>
+  adminFetch(`/api/health-diary/admin/user/${userId}/ai-summaries`);
+
 // ── Health Diary (patient) ────────────────────────────────
 // All endpoints require user_token Bearer. camelCase per API contract.
 

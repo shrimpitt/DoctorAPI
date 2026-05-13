@@ -17,11 +17,13 @@ import RegisterPage      from "./pages/RegisterPage";
 import ProfilePage       from "./pages/ProfilePage";
 import HealthDiaryPage  from "./pages/HealthDiaryPage";
 
-import AdminLayout       from "./pages/admin/AdminLayout";
-import AppointmentsAdmin from "./pages/admin/AppointmentsAdmin";
-import OrdersAdmin       from "./pages/admin/OrdersAdmin";
-import SlotsAdmin        from "./pages/admin/SlotsAdmin";
-import ProductsAdmin     from "./pages/admin/ProductsAdmin";
+import AdminLayout            from "./pages/admin/AdminLayout";
+import AppointmentsAdmin      from "./pages/admin/AppointmentsAdmin";
+import OrdersAdmin            from "./pages/admin/OrdersAdmin";
+import SlotsAdmin             from "./pages/admin/SlotsAdmin";
+import ProductsAdmin          from "./pages/admin/ProductsAdmin";
+import AdminPatientsPage      from "./pages/admin/AdminPatientsPage";
+import AdminPatientDiaryPage  from "./pages/admin/AdminPatientDiaryPage";
 
 import "./index.css";
 
@@ -67,7 +69,9 @@ export default function App() {
                   <Route path="appointments" element={<AppointmentsAdmin />} />
                   <Route path="orders"       element={<OrdersAdmin />} />
                   <Route path="products"     element={<ProductsAdmin />} />
-                  <Route path="slots"        element={<SlotsAdmin />} />
+                  <Route path="slots"                       element={<SlotsAdmin />} />
+                  <Route path="patients"                    element={<AdminPatientsPage />} />
+                  <Route path="patients/:userId/diary"      element={<AdminPatientDiaryPage />} />
                 </Route>
               </Routes>
             </CartProvider>
