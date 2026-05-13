@@ -130,7 +130,7 @@ namespace DoctorAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,Doctor")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _context.Users
