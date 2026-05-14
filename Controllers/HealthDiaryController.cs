@@ -254,6 +254,113 @@ namespace DoctorAPI.Controllers
             return Ok(summaries);
         }
 
+        [HttpPost("recommend-products")]
+        [Authorize]
+        public async Task<IActionResult> RecommendProducts()
+        {
+            var userId = GetCurrentUserId();
+
+            var entries = await _context.HealthDiaryEntries.Where(x => x.UserId == userId).ToListAsync();
+
+            var recommendations = new List<PeptideRecommendationDto>();
+            var addedProductIds = new HashSet<long>();
+
+            var allProducts = await _context.Products.Where(p => p.is_active).ToListAsync();
+
+            bool hasFatigue = entries.Any(e => (e.Symptoms != null && (e.Symptoms.ToLower().Contains("устал") || e.Symptoms.ToLower().Contains("fatigue"))) || (e.SleepHours > 0 && e.SleepHours < 7));
+            bool hasAnemia = entries.Any(e => e.Symptoms != null && (e.Symptoms.ToLower().Contains("анемия") || e.Symptoms.ToLower().Contains("anemia") || e.Symptoms.ToLower().Contains("головн")));
+            bool hasHighSugar = entries.Any(e => e.BloodSugar > 6);
+
+            void AddRecommendation(string keywordMatch, string reasoning)
+            {
+                var product = allProducts.FirstOrDefault(p => p.name.ToLower().Contains(keywordMatch.ToLower()) || (p.full_description != null && p.full_description.ToLower().Contains(keywordMatch.ToLower()))) 
+                    ?? allProducts.FirstOrDefault(p => !addedProductIds.Contains(p.id));
+
+                if (product != null && !addedProductIds.Contains(product.id))
+                {
+                    recommendations.Add(new PeptideRecommendationDto
+                    {
+                        ProductId = product.id,
+                        ProductName = product.name,
+                        Reasoning = reasoning
+                    });
+                    addedProductIds.Add(product.id);
+                }
+            }
+
+            if (hasFatigue)
+            {
+                AddRecommendation("эпиталон", "Регуляция сна, циркадных ритмов. У вас в дневнике отмечен недостаток сна или усталость.");
+            }
+            if (hasAnemia)
+            {
+                AddRecommendation("тимоген", "Поддержка иммунитета и крови. У вас отмечались симптомы, похожие на анемию или частые головные боли.");
+            }
+            if (hasHighSugar)
+            {
+                AddRecommendation("панкраген", "Поддержка эндокринной системы. У вас в дневнике отмечался повышенный уровень сахара.");
+            }
+
+            if (recommendations.Count == 0 && allProducts.Any())
+            {
+                AddRecommendation("пептид", "Общеукрепляющее действие на основе ваших записей.");
+            }
+
+            foreach (var rec in recommendations)
+            {
+                var recEntity = new PeptideRecommendation
+                {
+                    UserId = userId,
+                    ProductId = rec.ProductId,
+                    Reasoning = rec.Reasoning,
+                    CreatedAt = DateTime.UtcNow
+                };
+                _context.PeptideRecommendations.Add(recEntity);
+            }
+            await _context.SaveChangesAsync();
+
+            return Ok(recommendations);
+        }
+
+        [HttpGet("my/recommendations")]
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> GetMyRecommendations()
+        {
+            var userId = GetCurrentUserId();
+            var recs = await _context.PeptideRecommendations
+                .Include(x => x.Product)
+                .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.CreatedAt)
+                .Select(x => new PeptideRecommendationDto
+                {
+                    ProductId = x.ProductId,
+                    ProductName = x.Product != null ? x.Product.name : "Unknown",
+                    Reasoning = x.Reasoning
+                })
+                .ToListAsync();
+
+            return Ok(recs);
+        }
+
+        [HttpGet("admin/user/{userId}/recommendations")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetUserRecommendations(long userId)
+        {
+            var recs = await _context.PeptideRecommendations
+                .Include(x => x.Product)
+                .Where(x => x.UserId == userId)
+                .OrderByDescending(x => x.CreatedAt)
+                .Select(x => new PeptideRecommendationDto
+                {
+                    ProductId = x.ProductId,
+                    ProductName = x.Product != null ? x.Product.name : "Unknown",
+                    Reasoning = x.Reasoning
+                })
+                .ToListAsync();
+
+            return Ok(recs);
+        }
+
         private long GetCurrentUserId()
         {
             var userIdClaim = User.FindFirst("userId")?.Value

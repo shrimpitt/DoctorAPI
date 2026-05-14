@@ -24,6 +24,7 @@ namespace DoctorAPI.Data
         public DbSet<Setting> Settings { get; set; }
         public DbSet<HealthDiaryEntry> HealthDiaryEntries { get; set; }
         public DbSet<HealthDiaryAiSummary> HealthDiaryAiSummaries { get; set; }
+        public DbSet<PeptideRecommendation> PeptideRecommendations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
