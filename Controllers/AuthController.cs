@@ -47,7 +47,7 @@ namespace DoctorAPI.Controllers
                 new Claim(ClaimTypes.NameIdentifier, admin.Id.ToString()),
                 new Claim(ClaimTypes.Name, admin.FullName),
                 new Claim(ClaimTypes.Email, admin.Email),
-                new Claim(ClaimTypes.Role, admin.Role)
+                new Claim(ClaimTypes.Role, admin.Role == "admin" ? "Admin" : admin.Role)
             };
 
             var key = new SymmetricSecurityKey(
