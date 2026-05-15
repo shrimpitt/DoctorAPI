@@ -4,7 +4,7 @@
 .about {
   display: grid;
   grid-template-columns: 55% 45%;
-  background: #F2F0FC;
+  background: var(--primary-pale);
   align-items: center;
   min-height: 100vh;
 }
@@ -22,13 +22,13 @@
   font-size: clamp(40px, 4.5vw, 72px);
   font-weight: 800;
   line-height: 1.1;
-  color: #1A1A2E;
+  color: var(--charcoal);
   margin-bottom: 40px;
   letter-spacing: -1px;
 }
 .about__title em {
   font-style: normal;
-  color: #5B4FCF;
+  color: var(--primary);
 }
 
 /* ── Info cards ── */
@@ -40,7 +40,7 @@
 }
 
 .about__card {
-  background: white;
+  background: var(--bg);
   border-radius: 16px;
   padding: 28px;
   display: flex;
@@ -60,7 +60,7 @@
   font-family: var(--font-heading);
   font-size: clamp(20px, 2.2vw, 28px);
   font-weight: 800;
-  color: #1A1A2E;
+  color: var(--charcoal);
   line-height: 1;
   letter-spacing: -0.5px;
 }
@@ -68,18 +68,18 @@
 .about__card-icon {
   width: 36px;
   height: 36px;
-  background: #F2F0FC;
+  background: var(--primary-pale);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #5B4FCF;
+  color: var(--primary);
   flex-shrink: 0;
 }
 
 .about__card-label {
   font-size: 13px;
-  color: #888;
+  color: var(--mid-gray);
   line-height: 1.45;
   font-weight: 400;
 }
@@ -88,7 +88,7 @@
 .about__dirs-label {
   font-size: 20px;
   font-weight: 700;
-  color: #1A1A2E;
+  color: var(--charcoal);
   margin-bottom: 16px;
 }
 
@@ -103,11 +103,11 @@
   align-items: center;
   padding: 8px 18px;
   background: transparent;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 100px;
   font-size: 14px;
   font-weight: 400;
-  color: #444;
+  color: var(--text-secondary);
   cursor: default;
   transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
@@ -220,7 +220,7 @@
 .about-stats {
   display: flex;
   align-items: stretch;
-  background: white;
+  background: var(--bg);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
 }

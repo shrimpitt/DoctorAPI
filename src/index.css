@@ -58,6 +58,64 @@
   --shadow-blue: 0 8px 24px rgba(91,79,207,0.28);
 
   --transition: 0.3s ease;
+
+  /* ── Navbar backdrop (needs separate vars because rgba() can't use vars directly) ── */
+  --navbar-scrolled-bg: rgba(255,255,255,0.97);
+  --navbar-menu-bg:     rgba(255,255,255,0.99);
+}
+
+/* ── DARK THEME ────────────────────────────────────────── */
+[data-theme="dark"] {
+  /* Backgrounds */
+  --bg:          #0F1117;
+  --bg-section:  #161B27;
+  --warm-white:  #1A1F2E;
+  --cream:       #1E2433;
+
+  /* Text */
+  --text:           #F1F5F9;
+  --text-secondary: #94A3B8;
+  --charcoal:       #E2E8F0;
+  --mid-gray:       #94A3B8;
+  --light-gray:     #475569;
+
+  /* Borders */
+  --border:       #2D3748;
+  --border-light: #1E293B;
+
+  /* Primary tints — dark-adapted backgrounds for highlighted areas */
+  --primary-light: #1E1A3F;
+  --primary-pale:  #141130;
+  --blue-light:    #1E1A3F;
+  --blue-pale:     #141130;
+  --sage-light:    #1E1A3F;
+  --sage-pale:     #141130;
+
+  /* Danger tints */
+  --red-light:  #2D1515;
+  --gold-light: #2D1515;
+  --gold-pale:  #2D1515;
+
+  /* Shadows — stronger on dark backgrounds */
+  --shadow-sm:   0 1px 4px  rgba(0,0,0,0.40);
+  --shadow-md:   0 4px 20px rgba(0,0,0,0.50);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.60);
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.40);
+  --shadow-blue: 0 8px 24px rgba(91,79,207,0.45);
+
+  /* Navbar backdrops */
+  --navbar-scrolled-bg: rgba(15,17,23,0.97);
+  --navbar-menu-bg:     rgba(15,17,23,0.99);
+}
+
+/* ── DARK THEME component overrides ── */
+[data-theme="dark"] .hero__right::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(15,17,23,0.35);
+  z-index: 3;
+  pointer-events: none;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -216,7 +274,7 @@ body {
 
 /* ── CARD BASE ── */
 .card {
-  background: white;
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
@@ -248,7 +306,7 @@ body {
   font-size: 16px;
   font-weight: 500;
   color: var(--text);
-  background: white;
+  background: var(--warm-white);
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }

@@ -4,16 +4,139 @@ import { getProductById } from "../api";
 import { useCart } from "../context/CartContext";
 import { getVolumes } from "../utils/volumes";
 import { getProductImage, getProductName } from "../utils/productImage";
+import { getDosageInfo } from "../data/dosageInfo";
 import CartSidebar from "../components/shop/CartSidebar";
 import Spinner from "../components/ui/Spinner";
 import "./ProductPage.css";
 
-const TABS = ["Описание", "Технические характеристики", "Условия хранения", "Калькулятор дозировок"];
+const TABS = ["Описание", "Применение", "Технические характеристики", "Условия хранения", "Калькулятор дозировок"];
+
+// Inline icon renderer — syringe, pill, or droplet
+function DosageIcon({ type = "syringe", size = 22 }) {
+  const p = {
+    width: size, height: size,
+    viewBox: "0 0 24 24", fill: "none",
+    stroke: "currentColor", strokeWidth: "2",
+    strokeLinecap: "round", strokeLinejoin: "round",
+  };
+  if (type === "pill") return (
+    <svg {...p}>
+      <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/>
+      <path d="m8.5 8.5 7 7"/>
+    </svg>
+  );
+  if (type === "droplet") return (
+    <svg {...p}>
+      <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>
+    </svg>
+  );
+  return (
+    <svg {...p}>
+      <path d="m18 2 4 4"/>
+      <path d="m17 7 3-3"/>
+      <path d="M14 4 3 15l3 3L17 7l-3-3z"/>
+      <path d="m3 15 1.5 1.5"/>
+      <path d="m2.5 21.5 3-3"/>
+      <path d="m11 11-5 5"/>
+    </svg>
+  );
+}
+
+function UsageTab({ productId }) {
+  const info = getDosageInfo(productId);
+
+  if (!info) {
+    return (
+      <div className="pp__usage">
+        <p className="pp__usage-no-data">
+          Применение согласно индивидуальному назначению врача.
+        </p>
+        <div className="pp__usage-disclaimer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>
+            <strong>Применять только по назначению врача.</strong>{" "}
+            Информация представлена для ознакомления. Не является медицинской рекомендацией.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="pp__usage">
+      {/* Icon + title */}
+      <div className="pp__usage-header">
+        <div className="pp__usage-icon">
+          <DosageIcon type={info.icon} size={24} />
+        </div>
+        <div>
+          <p className="pp__usage-header-title">Описание и применение</p>
+          <p className="pp__usage-header-sub">Данные носят справочный характер</p>
+        </div>
+      </div>
+
+      {/* Key pills: dosage / course / admin */}
+      <div className="pp__usage-pills">
+        <div className="pp__usage-pill">
+          <span className="pp__usage-pill-label">Дозировка</span>
+          <span className="pp__usage-pill-value">{info.dosage}</span>
+        </div>
+        <div className="pp__usage-pill">
+          <span className="pp__usage-pill-label">Курс</span>
+          <span className="pp__usage-pill-value">{info.course}</span>
+        </div>
+        <div className="pp__usage-pill">
+          <span className="pp__usage-pill-label">Способ применения</span>
+          <span className="pp__usage-pill-value">{info.admin}</span>
+        </div>
+      </div>
+
+      {/* Indications */}
+      {info.indications && (
+        <div className="pp__usage-section">
+          <p className="pp__usage-section-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Показания
+          </p>
+          <p className="pp__usage-section-text">{info.indications}</p>
+        </div>
+      )}
+
+      {/* Contraindications */}
+      {info.contraindications && (
+        <div className="pp__usage-section">
+          <p className="pp__usage-section-title pp__usage-section-title--warn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            Противопоказания
+          </p>
+          <p className="pp__usage-section-text">{info.contraindications}</p>
+        </div>
+      )}
+
+      {/* Mandatory medical disclaimer */}
+      <div className="pp__usage-disclaimer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p>
+          <strong>Применять только по назначению врача.</strong>{" "}
+          Информация представлена исключительно в ознакомительных целях и не является медицинской рекомендацией или заменой профессиональной консультации специалиста.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 function DosageCalculator({ basePrice }) {
   const [weight,  setWeight]  = useState("");
   const [dose,    setDose]    = useState("");
-  const [conc,    setConc]    = useState("1"); // mg/ml
+  const [conc,    setConc]    = useState("1");
   const result = weight && dose
     ? { totalMcg: (weight * dose).toFixed(1), volumeMl: ((weight * dose) / (conc * 1000)).toFixed(3) }
     : null;
@@ -99,6 +222,7 @@ export default function ProductPage() {
   const displayName = getProductName(product);
   const totalPrice  = currentVol.price * qty;
   const inStock     = product.stock_qty > 0;
+  const dosageInfo  = getDosageInfo(product.id);
 
   const handleAdd = () => {
     for (let i = 0; i < qty; i++) {
@@ -113,12 +237,10 @@ export default function ProductPage() {
     setTimeout(() => setAdded(false), 2500);
   };
 
-  // Thumbnails — main image only for now (backend has single image)
   const thumbs = imgSrc ? [imgSrc] : [];
 
   return (
     <div className="pp">
-      {/* Header — same as ShopPage */}
       <header className="shop-header">
         <div className="container shop-header__inner">
           <Link to="/shop" className="booking-page__back">
@@ -144,6 +266,12 @@ export default function ProductPage() {
         <div className="pp__gallery">
           <div className="pp__main-img-wrap">
             <span className="pp__gallery-badge">Вода в комплекте</span>
+
+            {/* Medical icon badge — top-right */}
+            <span className="pp__med-icon" aria-hidden="true">
+              <DosageIcon type={dosageInfo?.icon ?? "syringe"} size={18} />
+            </span>
+
             {imgSrc ? (
               <img src={imgSrc} alt={product.name} className={`pp__main-img${fading ? " switching" : ""}`} />
             ) : (
@@ -157,7 +285,6 @@ export default function ProductPage() {
             )}
           </div>
 
-          {/* Thumbnails */}
           {thumbs.length > 0 && (
             <div className="pp__thumbs">
               {thumbs.map((src, i) => (
@@ -168,9 +295,8 @@ export default function ProductPage() {
             </div>
           )}
 
-          {/* Water note */}
           <div className="pp__water-note">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B3A5C" strokeWidth="1.8">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="1.8">
               <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/>
             </svg>
             <span>Бактерицидная вода для разведения пептида идёт в комплекте</span>
@@ -182,6 +308,28 @@ export default function ProductPage() {
           {product.sku && <p className="pp__sku">Арт. {product.sku}</p>}
 
           <h1 className="pp__name">{displayName}</h1>
+
+          {/* Inline dosage summary on product page */}
+          {dosageInfo && (
+            <div className="pp__dosage-summary">
+              <span className="pp__dosage-summary-chip">
+                <DosageIcon type={dosageInfo.icon} size={13} />
+                {dosageInfo.dosage}
+              </span>
+              <span className="pp__dosage-summary-chip">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                Курс: {dosageInfo.course}
+              </span>
+              <span className="pp__dosage-summary-chip">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                {dosageInfo.admin}
+              </span>
+            </div>
+          )}
 
           {product.short_description && (
             <p className="pp__short">{product.short_description}</p>
@@ -222,7 +370,6 @@ export default function ProductPage() {
             </div>
           </div>
 
-          {/* Stock / CTA */}
           {inStock ? (
             <>
               <button className="pp__add-btn" onClick={handleAdd}>
@@ -236,7 +383,6 @@ export default function ProductPage() {
             </div>
           )}
 
-          {/* Meta */}
           <div className="pp__meta">
             {product.stock_qty > 0 && (
               <span className="pp__in-stock">✓ В наличии</span>
@@ -260,6 +406,7 @@ export default function ProductPage() {
         </div>
 
         <div className="pp__tab-content">
+          {/* Описание */}
           {activeTab === 0 && (
             <div className="pp__tab-body">
               {product.full_description ? (
@@ -270,7 +417,11 @@ export default function ProductPage() {
             </div>
           )}
 
-          {activeTab === 1 && (
+          {/* Применение */}
+          {activeTab === 1 && <UsageTab productId={product.id} />}
+
+          {/* Технические характеристики */}
+          {activeTab === 2 && (
             <div className="pp__tab-body">
               <table className="pp__specs-table">
                 <tbody>
@@ -283,7 +434,8 @@ export default function ProductPage() {
             </div>
           )}
 
-          {activeTab === 2 && (
+          {/* Условия хранения */}
+          {activeTab === 3 && (
             <div className="pp__tab-body">
               <ul className="pp__storage-list">
                 <li>Хранить при температуре от +2°C до +8°C (в холодильнике)</li>
@@ -295,7 +447,8 @@ export default function ProductPage() {
             </div>
           )}
 
-          {activeTab === 3 && (
+          {/* Калькулятор дозировок */}
+          {activeTab === 4 && (
             <DosageCalculator basePrice={currentVol.price} />
           )}
         </div>

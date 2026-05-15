@@ -1,7 +1,7 @@
 .shop-page { min-height: 100vh; background: var(--bg-section); }
 
 .shop-header {
-  background: white;
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
   padding: 16px 0;
   position: sticky;
@@ -73,7 +73,7 @@
   font-size: 13px;
   font-family: var(--font-body);
   color: var(--mid-gray);
-  background: white;
+  background: var(--bg);
   cursor: pointer;
   transition: all var(--transition);
 }

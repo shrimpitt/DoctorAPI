@@ -14,7 +14,7 @@
 }
 .order-success-banner__icon {
   width: 52px; height: 52px;
-  background: white;
+  background: var(--bg);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
@@ -24,7 +24,7 @@
 .order-success-banner p  { font-size: 14px; color: var(--mid-gray); }
 
 .order-card {
-  background: white;
+  background: var(--bg);
   border: 1.5px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;

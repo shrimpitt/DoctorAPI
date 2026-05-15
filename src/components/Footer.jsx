@@ -1,16 +1,11 @@
+import { useTranslation } from "react-i18next";
 import "./Footer.css";
 
-const navLinks = [
-  { id: "home", label: "Главная" },
-  { id: "about", label: "О докторе" },
-  { id: "services", label: "Услуги" },
-  { id: "courses", label: "Курсы" },
-  { id: "blog", label: "Блог" },
-  { id: "reviews", label: "Отзывы" },
-  { id: "contacts", label: "Контакты" },
-];
+const navLinkIds = ["home", "about", "services", "courses", "blog", "reviews", "contacts"];
 
 export default function Footer() {
+  const { t } = useTranslation();
+
   const handleNav = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
@@ -22,24 +17,22 @@ export default function Footer() {
           <div className="footer__brand">
             <p className="footer__logo-name">Dr. Kadyrbekova</p>
             <p className="footer__logo-sub">Эндокринолог · Интегративная медицина · Пептидная биорегуляция</p>
-            <p className="footer__tagline">
-              Помогаю женщинам восстановить гормональный баланс и вернуть качество жизни через персонализированный подход.
-            </p>
+            <p className="footer__tagline">{t("footer.tagline")}</p>
           </div>
 
           <div className="footer__nav">
-            <p className="footer__nav-title">Навигация</p>
+            <p className="footer__nav-title">{t("footer.nav")}</p>
             <ul>
-              {navLinks.map((link) => (
-                <li key={link.id}>
-                  <button onClick={() => handleNav(link.id)}>{link.label}</button>
+              {navLinkIds.map((id) => (
+                <li key={id}>
+                  <button onClick={() => handleNav(id)}>{t(`nav.${id}`)}</button>
                 </li>
               ))}
             </ul>
           </div>
 
           <div className="footer__contact">
-            <p className="footer__nav-title">Контакты</p>
+            <p className="footer__nav-title">{t("footer.contacts")}</p>
             <div className="footer__contact-list">
               <p>+7 700 123 45 67</p>
               <p>info@doctorkadyrbekova.kz</p>
@@ -68,11 +61,11 @@ export default function Footer() {
         </div>
 
         <div className="footer__bottom">
-          <p>© {new Date().getFullYear()} Dr. Kadyrbekova. Все права защищены.</p>
+          <p>© {new Date().getFullYear()} Dr. Kadyrbekova. {t("footer.rights")}</p>
           <div className="footer__legal">
-            <a href="#">Политика конфиденциальности</a>
+            <a href="#">{t("footer.privacy")}</a>
             <span>·</span>
-            <a href="#">Пользовательское соглашение</a>
+            <a href="#">{t("footer.terms")}</a>
           </div>
         </div>
       </div>

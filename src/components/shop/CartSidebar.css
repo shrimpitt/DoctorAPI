@@ -13,7 +13,7 @@
   height: 100vh;
   width: 380px;
   max-width: 100vw;
-  background: white;
+  background: var(--bg);
   z-index: 1001;
   display: flex;
   flex-direction: column;

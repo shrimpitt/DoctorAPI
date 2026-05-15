@@ -1,6 +1,6 @@
 /* ── PRODUCT CARD ─────────────────────────────────────── */
 .pc {
-  background: #fff;
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
@@ -79,6 +79,22 @@
   white-space: nowrap;
 }
 
+/* Medical icon badge — top-right of image */
+.pc__med-icon {
+  position: absolute;
+  top: 10px; right: 10px;
+  width: 30px; height: 30px;
+  background: var(--primary-light);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  z-index: 2;
+  flex-shrink: 0;
+}
+
 /* Body */
 .pc__body {
   padding: 18px 20px 20px;
@@ -102,6 +118,34 @@
   overflow: hidden;
 }
 .pc__name:hover { text-decoration: underline; }
+
+/* Dosage mini strip */
+.pc__dosage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.pc__dosage-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--primary);
+  background: var(--primary-light);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 7px;
+  white-space: nowrap;
+  line-height: 1;
+}
+.pc__dosage-chip svg { flex-shrink: 0; }
+.pc__dosage-default {
+  font-size: 10px;
+  color: var(--mid-gray);
+  font-style: italic;
+  line-height: 1.4;
+}
 
 .pc__desc {
   font-size: 12px;
@@ -141,7 +185,7 @@
   font-size: 13px;
   font-family: inherit;
   color: var(--charcoal);
-  background: #fff;
+  background: var(--bg);
   cursor: pointer;
   outline: none;
   appearance: none;
@@ -175,7 +219,7 @@
   font-size: 12px;
   font-weight: 500;
   color: var(--sage);
-  background: #fff;
+  background: var(--bg);
   text-decoration: none;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
@@ -205,7 +249,7 @@
 .pc__oos-text {
   font-size: 12px;
   font-weight: 600;
-  color: #D63031;
+  color: var(--red);
   text-align: center;
   padding: 4px 0;
 }
@@ -214,16 +258,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid #D63031;
+  border: 1.5px solid var(--red);
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 12px;
   font-weight: 600;
-  color: #D63031;
-  background: #fff;
+  color: var(--red);
+  background: var(--bg);
   text-decoration: none;
   cursor: pointer;
   transition: background 0.2s;
   font-family: inherit;
 }
-.pc__btn-preorder:hover { background: #FFF5F5; }
+.pc__btn-preorder:hover { background: var(--red-light); }

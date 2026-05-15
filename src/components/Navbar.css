@@ -7,7 +7,7 @@
 }
 
 .navbar--scrolled {
-  background: rgba(255,255,255,0.97);
+  background: var(--navbar-scrolled-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   padding: 10px 0;
@@ -233,7 +233,7 @@
     display: flex;
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(255,255,255,0.99);
+    background: var(--navbar-menu-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     flex-direction: column;
@@ -254,4 +254,54 @@
 @media (max-width: 640px) {
   .navbar__btn-login { display: none; }
   .navbar__logo-sub  { display: none; }
+}
+
+/* ── Language switcher ── */
+.navbar__lang {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--bg-section);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 2px;
+}
+.navbar__lang-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+  line-height: 1;
+}
+.navbar__lang-btn:hover { color: var(--text); }
+.navbar__lang-btn--active {
+  background: var(--primary);
+  color: white;
+}
+
+/* ── Theme toggle button ── */
+.navbar__theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  border-radius: var(--radius-xs);
+  transition: color 0.2s, background 0.2s;
+  flex-shrink: 0;
+}
+.navbar__theme-toggle:hover {
+  color: var(--primary);
+  background: var(--primary-light);
 }

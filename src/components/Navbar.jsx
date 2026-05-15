@@ -1,17 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import i18n from "../i18n/index.js";
 import { useCart } from "../context/CartContext";
 import { useUserAuth } from "../context/UserAuthContext";
+import { useTheme } from "../context/ThemeContext";
 import CartSidebar from "./shop/CartSidebar";
 import SearchBar from "./SearchBar";
 import "./Navbar.css";
 
-// Section links scroll to landing-page anchors; "Курсы" is now a page route (see below).
-const sectionLinks = [
-  { id: "about",    label: "О докторе" },
-  { id: "services", label: "Услуги" },
-  { id: "reviews",  label: "Отзывы" },
-];
+// IDs map to nav.* translation keys
+const sectionLinkIds = ["about", "services", "reviews"];
 
 export default function Navbar({ activeSection, setActiveSection }) {
   const [scrolled,  setScrolled]  = useState(false);
@@ -19,9 +18,17 @@ export default function Navbar({ activeSection, setActiveSection }) {
   const [cartOpen,  setCartOpen]  = useState(false);
   const { totalCount } = useCart();
   const { user, isAuthenticated, logout } = useUserAuth();
+  const { theme, toggleTheme } = useTheme();
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate  = useNavigate();
   const isLanding = location.pathname === "/";
+  const currentLang = i18n.language;
+
+  const switchLang = (lang) => {
+    i18n.changeLanguage(lang);
+    localStorage.setItem("lang", lang);
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -70,13 +77,13 @@ export default function Navbar({ activeSection, setActiveSection }) {
           {/* Section links */}
           <ul className={`navbar__links ${menuOpen ? "navbar__links--open" : ""}`}>
             {/* О докторе, Услуги — scroll to landing sections */}
-            {sectionLinks.slice(0, 2).map((link) => (
-              <li key={link.id}>
+            {sectionLinkIds.slice(0, 2).map((id) => (
+              <li key={id}>
                 <button
-                  className={`navbar__link ${activeSection === link.id ? "navbar__link--active" : ""}`}
-                  onClick={() => handleScrollNav(link.id)}
+                  className={`navbar__link ${activeSection === id ? "navbar__link--active" : ""}`}
+                  onClick={() => handleScrollNav(id)}
                 >
-                  {link.label}
+                  {t(`nav.${id}`)}
                 </button>
               </li>
             ))}
@@ -88,25 +95,25 @@ export default function Navbar({ activeSection, setActiveSection }) {
                 className="navbar__link"
                 onClick={() => setMenuOpen(false)}
               >
-                Курсы
+                {t("nav.courses")}
               </Link>
             </li>
 
             {/* Отзывы — scroll to landing section */}
-            {sectionLinks.slice(2).map((link) => (
-              <li key={link.id}>
+            {sectionLinkIds.slice(2).map((id) => (
+              <li key={id}>
                 <button
-                  className={`navbar__link ${activeSection === link.id ? "navbar__link--active" : ""}`}
-                  onClick={() => handleScrollNav(link.id)}
+                  className={`navbar__link ${activeSection === id ? "navbar__link--active" : ""}`}
+                  onClick={() => handleScrollNav(id)}
                 >
-                  {link.label}
+                  {t(`nav.${id}`)}
                 </button>
               </li>
             ))}
 
             <li>
               <Link to="/shop" className="navbar__link" onClick={() => setMenuOpen(false)}>
-                Магазин
+                {t("nav.shop")}
               </Link>
             </li>
           </ul>
@@ -114,6 +121,32 @@ export default function Navbar({ activeSection, setActiveSection }) {
           {/* Right actions */}
           <div className="navbar__actions">
             <SearchBar />
+
+            {/* Theme toggle — sun (dark mode) / moon (light mode) */}
+            <button
+              className="navbar__theme-toggle"
+              onClick={toggleTheme}
+              aria-label={theme === "light" ? "Включить тёмную тему" : "Включить светлую тему"}
+              title={theme === "light" ? "Тёмная тема" : "Светлая тема"}
+            >
+              {theme === "light" ? (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="5"/>
+                  <line x1="12" y1="1"  x2="12" y2="3"/>
+                  <line x1="12" y1="21" x2="12" y2="23"/>
+                  <line x1="4.22" y1="4.22"   x2="5.64"  y2="5.64"/>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                  <line x1="1"  y1="12" x2="3"  y2="12"/>
+                  <line x1="21" y1="12" x2="23" y2="12"/>
+                  <line x1="4.22"  y1="19.78" x2="5.64"  y2="18.36"/>
+                  <line x1="18.36" y1="5.64"  x2="19.78" y2="4.22"/>
+                </svg>
+              )}
+            </button>
 
             {/* Cart */}
             <button
@@ -128,6 +161,22 @@ export default function Navbar({ activeSection, setActiveSection }) {
               {totalCount > 0 && <span className="navbar__cart-badge">{totalCount}</span>}
             </button>
 
+            {/* Language switcher */}
+            <div className="navbar__lang">
+              <button
+                className={`navbar__lang-btn ${currentLang === "ru" ? "navbar__lang-btn--active" : ""}`}
+                onClick={() => switchLang("ru")}
+              >
+                RU
+              </button>
+              <button
+                className={`navbar__lang-btn ${currentLang === "kk" ? "navbar__lang-btn--active" : ""}`}
+                onClick={() => switchLang("kk")}
+              >
+                KZ
+              </button>
+            </div>
+
             {/* User auth area */}
             {isAuthenticated ? (
               <div className="navbar__user">
@@ -136,7 +185,7 @@ export default function Navbar({ activeSection, setActiveSection }) {
                   <div className="navbar__user-avatar">{avatarLetter}</div>
                   <span>{displayName}</span>
                 </Link>
-                <button className="navbar__logout" onClick={handleLogout} title="Выйти">
+                <button className="navbar__logout" onClick={handleLogout} title={t("auth.logout")}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
                     <polyline points="16 17 21 12 16 7"/>
@@ -147,10 +196,10 @@ export default function Navbar({ activeSection, setActiveSection }) {
             ) : (
               <div className="navbar__auth-btns">
                 <Link to="/login" className="btn-ghost navbar__btn-login" onClick={() => setMenuOpen(false)}>
-                  Войти
+                  {t("auth.login")}
                 </Link>
                 <Link to="/register" className="btn-primary navbar__cta" onClick={() => setMenuOpen(false)}>
-                  Записаться
+                  {t("auth.register")}
                 </Link>
               </div>
             )}

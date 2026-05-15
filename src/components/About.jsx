@@ -1,17 +1,10 @@
+import { useTranslation } from "react-i18next";
 import "./About.css";
 
-const directionTags = [
-  "Эндокринология",
-  "Гормональный баланс",
-  "Пептидная биорегуляция",
-  "Антиэйджинг",
-  "Интегративная медицина",
-  "Женское здоровье",
-  "Профилактика старения",
-  "Нутрициология",
-];
-
 export default function About() {
+  const { t } = useTranslation();
+  const dirs = t("about.dirs", { returnObjects: true });
+
   return (
     <>
     {/* ── ABOUT: ACHIEVEMENTS + 3D CHART ── */}
@@ -21,15 +14,15 @@ export default function About() {
       <div className="about__left">
 
         <h2 className="about__title">
-          Сколько пациентов у доктора<br />
-          <em>Кадырбековой?</em>
+          {t("about.titleLine1")}<br />
+          <em>{t("about.titleEm")}</em>
         </h2>
 
         {/* Info cards */}
         <div className="about__cards">
           <div className="about__card">
             <div className="about__card-top">
-              <span className="about__card-num">15 000 ₸</span>
+              <span className="about__card-num">{t("about.card1Num")}</span>
               <div className="about__card-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
@@ -37,11 +30,11 @@ export default function About() {
                 </svg>
               </div>
             </div>
-            <span className="about__card-label">Средняя стоимость консультации</span>
+            <span className="about__card-label">{t("about.card1Label")}</span>
           </div>
           <div className="about__card">
             <div className="about__card-top">
-              <span className="about__card-num">3 месяца</span>
+              <span className="about__card-num">{t("about.card2Num")}</span>
               <div className="about__card-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="10"/>
@@ -49,14 +42,14 @@ export default function About() {
                 </svg>
               </div>
             </div>
-            <span className="about__card-label">Среднее сопровождение пациента</span>
+            <span className="about__card-label">{t("about.card2Label")}</span>
           </div>
         </div>
 
         {/* Direction tags */}
-        <p className="about__dirs-label">Направления работы:</p>
+        <p className="about__dirs-label">{t("about.dirsLabel")}</p>
         <div className="about__dirs">
-          {directionTags.map((tag) => (
+          {dirs.map((tag) => (
             <span className="about__dir-tag" key={tag}>{tag}</span>
           ))}
         </div>
@@ -68,15 +61,15 @@ export default function About() {
           <div className="about__circles">
             <div className="about__circle about__circle--1">
               <span className="about__circle-num">3000+</span>
-              <span className="about__circle-label">пациентов</span>
+              <span className="about__circle-label">{t("about.circle1")}</span>
             </div>
             <div className="about__circle about__circle--2">
               <span className="about__circle-num">15+</span>
-              <span className="about__circle-label">лет практики</span>
+              <span className="about__circle-label">{t("about.circle2")}</span>
             </div>
             <div className="about__circle about__circle--3">
               <span className="about__circle-num">98%</span>
-              <span className="about__circle-label">довольных</span>
+              <span className="about__circle-label">{t("about.circle3")}</span>
             </div>
           </div>
         </div>
@@ -87,22 +80,22 @@ export default function About() {
     <div className="about-stats">
       <div className="about-stats__item">
         <span className="about-stats__num">15+</span>
-        <span className="about-stats__label">лет практики</span>
+        <span className="about-stats__label">{t("about.stat1")}</span>
       </div>
       <div className="about-stats__divider" />
       <div className="about-stats__item">
         <span className="about-stats__num">3000+</span>
-        <span className="about-stats__label">пациентов</span>
+        <span className="about-stats__label">{t("about.stat2")}</span>
       </div>
       <div className="about-stats__divider" />
       <div className="about-stats__item">
         <span className="about-stats__num">12+</span>
-        <span className="about-stats__label">сертификатов</span>
+        <span className="about-stats__label">{t("about.stat3")}</span>
       </div>
       <div className="about-stats__divider" />
       <div className="about-stats__item">
         <span className="about-stats__num">98%</span>
-        <span className="about-stats__label">довольных пациентов</span>
+        <span className="about-stats__label">{t("about.stat4")}</span>
       </div>
     </div>
 

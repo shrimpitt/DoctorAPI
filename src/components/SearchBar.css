@@ -30,7 +30,7 @@
   font-family: var(--font-body);
   font-size: 13px;
   color: var(--text);
-  background: white;
+  background: var(--bg);
   outline: none;
   box-shadow: 0 0 0 3px rgba(30,111,217,0.10);
   transition: width 0.25s ease;
@@ -66,7 +66,7 @@
   left: 0;
   right: 0;
   min-width: 300px;
-  background: white;
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-lg);

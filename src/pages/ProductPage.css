@@ -1,7 +1,7 @@
 /* ── PRODUCT PAGE ─────────────────────────────────────── */
 .pp {
   min-height: 100vh;
-  background: #fff;
+  background: var(--bg);
   font-family: var(--font-body);
 }
 
@@ -23,11 +23,11 @@
 
 .pp__main-img-wrap {
   position: relative;
-  background: #F5F7FA;
+  background: var(--bg-section);
   border-radius: 12px;
   overflow: hidden;
   aspect-ratio: 1;
-  border: 1px solid #E8EDF2;
+  border: 1px solid var(--border);
 }
 .pp__gallery-badge {
   position: absolute;
@@ -66,7 +66,7 @@
   border: 2px solid transparent;
   border-radius: 8px;
   overflow: hidden;
-  background: #F5F7FA;
+  background: var(--bg-section);
   cursor: pointer;
   padding: 0;
   transition: border-color 0.2s;
@@ -79,12 +79,12 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  background: #EEF4FF;
-  border: 1px solid #C5D8F0;
+  background: var(--primary-light);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 12px 16px;
   font-size: 13px;
-  color: #1B3A5C;
+  color: var(--charcoal);
   line-height: 1.5;
 }
 .pp__water-note svg { flex-shrink: 0; margin-top: 1px; }
@@ -101,7 +101,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #1B3A5C;
+  color: var(--charcoal);
   line-height: 1.25;
   margin-bottom: 12px;
 }
@@ -114,7 +114,7 @@
 .pp__price {
   font-size: 36px;
   font-weight: 700;
-  color: #1B3A5C;
+  color: var(--charcoal);
   letter-spacing: -1px;
   margin-bottom: 24px;
   display: flex;
@@ -143,13 +143,13 @@
 }
 .pp__select {
   flex: 1;
-  border: 1.5px solid #E8EDF2;
+  border: 1.5px solid var(--border);
   border-radius: 8px;
   padding: 11px 36px 11px 14px;
   font-size: 14px;
   font-family: inherit;
-  color: #1B3A5C;
-  background: #fff;
+  color: var(--charcoal);
+  background: var(--bg);
   cursor: pointer;
   outline: none;
   appearance: none;
@@ -164,33 +164,33 @@
 .pp__qty {
   display: flex;
   align-items: center;
-  border: 1.5px solid #E8EDF2;
+  border: 1.5px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
 }
 .pp__qty-btn {
   width: 44px; height: 44px;
   border: none;
-  background: #F5F7FA;
+  background: var(--bg-section);
   font-size: 20px;
-  color: #1B3A5C;
+  color: var(--charcoal);
   cursor: pointer;
   transition: background 0.2s;
   font-family: inherit;
 }
-.pp__qty-btn:hover { background: #E8EDF2; }
+.pp__qty-btn:hover { background: var(--border); }
 .pp__qty-val {
   width: 52px;
   text-align: center;
   font-size: 16px;
   font-weight: 600;
-  color: #1B3A5C;
+  color: var(--charcoal);
 }
 
 /* Add to cart */
 .pp__add-btn {
   width: 100%;
-  background: #1B3A5C;
+  background: var(--primary);
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -204,16 +204,16 @@
   transition: background 0.2s, transform 0.15s;
   letter-spacing: 0.3px;
 }
-.pp__add-btn:hover { background: #243F6B; transform: translateY(-1px); }
+.pp__add-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
 
 /* OOS */
 .pp__oos { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
-.pp__oos-text { font-size: 13px; font-weight: 600; color: #D63031; }
+.pp__oos-text { font-size: 13px; font-weight: 600; color: var(--red); }
 .pp__preorder-btn {
   width: 100%;
-  border: 2px solid #D63031;
-  background: #fff;
-  color: #D63031;
+  border: 2px solid var(--red);
+  background: var(--bg);
+  color: var(--red);
   border-radius: 10px;
   padding: 14px;
   font-size: 15px;
@@ -222,7 +222,7 @@
   font-family: inherit;
   transition: background 0.2s;
 }
-.pp__preorder-btn:hover { background: #FFF5F5; }
+.pp__preorder-btn:hover { background: var(--red-light); }
 
 .pp__in-stock {
   font-size: 13px;
@@ -238,7 +238,7 @@
 }
 .pp__tabs {
   display: flex;
-  border-bottom: 2px solid #E8EDF2;
+  border-bottom: 2px solid var(--border);
   margin-bottom: 32px;
   overflow-x: auto;
   scrollbar-width: none;
@@ -252,18 +252,18 @@
   padding: 14px 24px;
   font-size: 14px;
   font-weight: 500;
-  color: #7A8899;
+  color: var(--mid-gray);
   cursor: pointer;
   font-family: inherit;
   white-space: nowrap;
   transition: color 0.2s, border-color 0.2s;
 }
-.pp__tab:hover { color: #1B3A5C; }
-.pp__tab--active { color: #1B3A5C; border-bottom-color: #1B3A5C; font-weight: 600; }
+.pp__tab:hover { color: var(--charcoal); }
+.pp__tab--active { color: var(--charcoal); border-bottom-color: var(--primary); font-weight: 600; }
 
 .pp__tab-body {
   font-size: 15px;
-  color: #4A5568;
+  color: var(--mid-gray);
   line-height: 1.8;
   max-width: 760px;
 }
@@ -276,7 +276,7 @@
 }
 .pp__specs-table td {
   padding: 12px 16px;
-  border-bottom: 1px solid #E8EDF2;
+  border-bottom: 1px solid var(--border);
 }
 .pp__specs-table td:first-child {
   width: 200px;
@@ -335,8 +335,8 @@
 .pp__calc-field input:focus { border-color: #1B3A5C; }
 
 .pp__calc-result {
-  background: #EEF4FF;
-  border: 1px solid #C5D8F0;
+  background: var(--primary-light);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 20px 24px;
   margin-bottom: 16px;
@@ -351,7 +351,7 @@
   font-size: 14px;
 }
 .pp__calc-row span { color: #7A8899; }
-.pp__calc-row strong { font-size: 18px; color: #1B3A5C; }
+.pp__calc-row strong { font-size: 18px; color: var(--charcoal); }
 
 .pp__calc-disclaimer {
   font-size: 11px;
@@ -359,17 +359,157 @@
   line-height: 1.6;
 }
 
+/* Medical icon badge on gallery image */
+.pp__med-icon {
+  position: absolute;
+  top: 14px; right: 14px;
+  width: 38px; height: 38px;
+  background: var(--primary-light);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  z-index: 2;
+}
+
+/* Dosage summary strip below product name */
+.pp__dosage-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.pp__dosage-summary-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--primary);
+  background: var(--primary-light);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  white-space: nowrap;
+  line-height: 1;
+}
+.pp__dosage-summary-chip svg { flex-shrink: 0; }
+
+/* ── USAGE TAB ── */
+.pp__usage { max-width: 680px; }
+
+.pp__usage-no-data {
+  font-size: 15px;
+  color: var(--mid-gray);
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+.pp__usage-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.pp__usage-icon {
+  width: 50px; height: 50px;
+  background: var(--primary-light);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+.pp__usage-header-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--charcoal);
+  margin-bottom: 2px;
+}
+.pp__usage-header-sub {
+  font-size: 12px;
+  color: var(--mid-gray);
+}
+
+.pp__usage-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.pp__usage-pill {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--bg-section);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 20px;
+  min-width: 120px;
+}
+.pp__usage-pill-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--mid-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.pp__usage-pill-value {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--charcoal);
+}
+
+.pp__usage-section { margin-bottom: 20px; }
+.pp__usage-section-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--charcoal);
+  margin-bottom: 8px;
+}
+.pp__usage-section-title svg { color: var(--primary); flex-shrink: 0; }
+.pp__usage-section-title--warn svg { color: var(--red); }
+.pp__usage-section-title--warn { color: var(--charcoal); }
+.pp__usage-section-text {
+  font-size: 14px;
+  color: var(--mid-gray);
+  line-height: 1.7;
+}
+
+.pp__usage-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--primary-light);
+  border: 1.5px solid var(--primary);
+  border-radius: 10px;
+  padding: 16px 20px;
+  font-size: 13px;
+  color: var(--charcoal);
+  line-height: 1.65;
+  margin-top: 32px;
+}
+.pp__usage-disclaimer svg { color: var(--primary); margin-top: 1px; }
+.pp__usage-disclaimer strong { font-weight: 700; }
+
 /* Back button fallback */
 .pp__back-btn {
   font-size: 14px;
-  color: #1B3A5C;
+  color: var(--charcoal);
   text-decoration: none;
-  border: 1.5px solid #1B3A5C;
+  border: 1.5px solid var(--border);
   padding: 10px 20px;
   border-radius: 8px;
   transition: background 0.2s;
 }
-.pp__back-btn:hover { background: #EEF4FF; }
+.pp__back-btn:hover { background: var(--primary-light); }
 
 /* Responsive */
 @media (max-width: 900px) {

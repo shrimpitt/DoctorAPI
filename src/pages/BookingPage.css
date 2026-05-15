@@ -1,7 +1,7 @@
 .booking-page { min-height: 100vh; background: var(--cream); padding-bottom: 80px; }
 
 .booking-page__topbar {
-  background: white;
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
   padding: 16px 40px;
 }
@@ -22,7 +22,7 @@
 }
 
 .booking-success {
-  background: white;
+  background: var(--bg);
   border: 1.5px solid var(--border);
   border-radius: var(--radius);
   padding: 64px 48px;
@@ -43,7 +43,7 @@
 .booking-success p  { color: var(--mid-gray); font-size: 14px; }
 
 .booking-form {
-  background: white;
+  background: var(--bg);
   border: 1.5px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;

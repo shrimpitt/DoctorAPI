@@ -7,7 +7,7 @@
 }
 
 .review-card {
-  background: white;
+  background: var(--bg);
   border: 1.5px solid var(--border);
   border-radius: var(--radius);
   padding: 32px;

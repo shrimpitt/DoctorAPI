@@ -82,7 +82,7 @@
 
 /* ── CARD ── */
 .program-card {
-  background: white;
+  background: var(--bg);
   border-radius: 20px;
   overflow: hidden;
   display: flex;

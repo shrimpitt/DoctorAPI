@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider }       from "./context/ThemeContext";
 import { CartProvider }        from "./context/CartContext";
 import { AdminAuthProvider }   from "./context/AdminAuthContext";
 import { AuthProvider }        from "./context/AuthContext";
@@ -31,6 +32,7 @@ import "./index.css";
 
 export default function App() {
   return (
+    <ThemeProvider>
     <BrowserRouter>
       {/* UserAuthProvider wraps everything so any component can access user session */}
       <UserAuthProvider>
@@ -83,5 +85,6 @@ export default function App() {
         </AuthProvider>
       </UserAuthProvider>
     </BrowserRouter>
+    </ThemeProvider>
   );
 }

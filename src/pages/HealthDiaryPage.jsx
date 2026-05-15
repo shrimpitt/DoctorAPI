@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ResponsiveContainer, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -33,38 +34,40 @@ function toChartBase(entries) {
 }
 
 function SummaryCard({ summary, loading }) {
+  const { t } = useTranslation();
+
   if (loading) return <div className="hd-summary hd-summary--loading"><Spinner size={28} /></div>;
   if (!summary || summary.totalEntries === 0) {
     return (
       <div className="hd-summary hd-summary--empty">
-        <p>Пока нет записей. Добавьте первую, чтобы видеть статистику.</p>
+        <p>{t("diary.emptyStats")}</p>
       </div>
     );
   }
 
   const stats = [
-    { label: "Всего записей",           value: summary.totalEntries },
-    { label: "Средний вес",             value: summary.averageWeightKg   != null ? `${summary.averageWeightKg.toFixed(1)} кг`       : "—" },
-    { label: "Средний сахар",           value: summary.averageBloodSugar != null ? `${summary.averageBloodSugar.toFixed(1)} ммоль/л` : "—" },
-    { label: "Средний сон",             value: summary.averageSleepHours != null ? `${summary.averageSleepHours.toFixed(1)} ч`       : "—" },
-    { label: "Препараты принимались",   value: summary.medicationTakenCount  ?? "—" },
-    { label: "Пропущено",               value: summary.medicationMissedCount ?? "—" },
+    { labelKey: "diary.statTotal",    value: summary.totalEntries },
+    { labelKey: "diary.statWeight",   value: summary.averageWeightKg   != null ? `${summary.averageWeightKg.toFixed(1)} ${t("diary.unitKg")}`     : "—" },
+    { labelKey: "diary.statSugar",    value: summary.averageBloodSugar != null ? `${summary.averageBloodSugar.toFixed(1)} ${t("diary.unitMmol")}` : "—" },
+    { labelKey: "diary.statSleep",    value: summary.averageSleepHours != null ? `${summary.averageSleepHours.toFixed(1)} ${t("diary.unitHour")}` : "—" },
+    { labelKey: "diary.statMedTaken", value: summary.medicationTakenCount  ?? "—" },
+    { labelKey: "diary.statMedMissed",value: summary.medicationMissedCount ?? "—" },
   ];
 
   return (
     <div className="hd-summary">
       <div className="hd-summary__grid">
         {stats.map(s => (
-          <div className="hd-stat" key={s.label}>
+          <div className="hd-stat" key={s.labelKey}>
             <span className="hd-stat__value">{s.value}</span>
-            <span className="hd-stat__label">{s.label}</span>
+            <span className="hd-stat__label">{t(s.labelKey)}</span>
           </div>
         ))}
       </div>
 
       {summary.commonSymptoms?.length > 0 && (
         <div className="hd-summary__symptoms">
-          <span className="hd-summary__symptoms-label">Частые симптомы:</span>
+          <span className="hd-summary__symptoms-label">{t("diary.symptomsLabel")}</span>
           {summary.commonSymptoms.map((s, i) => (
             <span key={i} className="hd-tag">{s}</span>
           ))}
@@ -75,6 +78,7 @@ function SummaryCard({ summary, loading }) {
 }
 
 function ChartsSection({ entries }) {
+  const { t } = useTranslation();
   const base = toChartBase(entries);
 
   const weightData = base.filter(e => e.weightKg     != null).map(e => ({ date: shortDate(e.entryDate), value: e.weightKg }));
@@ -90,9 +94,9 @@ function ChartsSection({ entries }) {
   if (!anyChart) {
     return (
       <div className="hd-section">
-        <h3 className="hd-section__title">Графики динамики</h3>
+        <h3 className="hd-section__title">{t("diary.charts")}</h3>
         <p className="hd-charts__hint">
-          Графики появятся, когда наберётся минимум {MIN_CHART_ENTRIES} записи с данными по каждому показателю.
+          {t("diary.chartsHint", { count: MIN_CHART_ENTRIES })}
         </p>
       </div>
     );
@@ -109,14 +113,14 @@ function ChartsSection({ entries }) {
 
   return (
     <div className="hd-section">
-      <h3 className="hd-section__title">Графики динамики</h3>
-      <p className="hd-section__sub">Последние 30 записей</p>
+      <h3 className="hd-section__title">{t("diary.charts")}</h3>
+      <p className="hd-section__sub">{t("diary.chartsLast30")}</p>
 
       <div className="hd-charts">
         {/* Weight chart */}
         {hasEnough(weightData) && (
           <div className="hd-chart-wrap">
-            <span className="hd-chart-wrap__title">Вес, кг</span>
+            <span className="hd-chart-wrap__title">{t("diary.chartWeight")}</span>
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={weightData} {...chartProps}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -124,9 +128,9 @@ function ChartsSection({ entries }) {
                 <YAxis {...axisProps} domain={["auto", "auto"]} />
                 <Tooltip
                   contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid var(--border)" }}
-                  formatter={v => [`${v} кг`, "Вес"]}
+                  formatter={v => [`${v} ${t("diary.unitKg")}`, t("diary.chartLabelWeight")]}
                 />
-                <Line type="monotone" dataKey="value" stroke="var(--primary)" strokeWidth={2} dot={{ r: 3 }} name="Вес" />
+                <Line type="monotone" dataKey="value" stroke="var(--primary)" strokeWidth={2} dot={{ r: 3 }} name={t("diary.chartLabelWeight")} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -135,7 +139,7 @@ function ChartsSection({ entries }) {
         {/* Blood sugar chart */}
         {hasEnough(sugarData) && (
           <div className="hd-chart-wrap">
-            <span className="hd-chart-wrap__title">Сахар крови, ммоль/л</span>
+            <span className="hd-chart-wrap__title">{t("diary.chartSugar")}</span>
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={sugarData} {...chartProps}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -143,9 +147,9 @@ function ChartsSection({ entries }) {
                 <YAxis {...axisProps} domain={["auto", "auto"]} />
                 <Tooltip
                   contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid var(--border)" }}
-                  formatter={v => [`${v} ммоль/л`, "Сахар"]}
+                  formatter={v => [`${v} ${t("diary.unitMmol")}`, t("diary.chartLabelSugar")]}
                 />
-                <Line type="monotone" dataKey="value" stroke="var(--green)" strokeWidth={2} dot={{ r: 3 }} name="Сахар" />
+                <Line type="monotone" dataKey="value" stroke="var(--green)" strokeWidth={2} dot={{ r: 3 }} name={t("diary.chartLabelSugar")} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -154,7 +158,7 @@ function ChartsSection({ entries }) {
         {/* Sleep chart */}
         {hasEnough(sleepData) && (
           <div className="hd-chart-wrap">
-            <span className="hd-chart-wrap__title">Сон, часов</span>
+            <span className="hd-chart-wrap__title">{t("diary.chartSleep")}</span>
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={sleepData} {...chartProps}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -162,9 +166,9 @@ function ChartsSection({ entries }) {
                 <YAxis {...axisProps} domain={[0, 12]} />
                 <Tooltip
                   contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid var(--border)" }}
-                  formatter={v => [`${v} ч`, "Сон"]}
+                  formatter={v => [`${v} ${t("diary.unitHour")}`, t("diary.chartLabelSleep")]}
                 />
-                <Line type="monotone" dataKey="value" stroke="#8B5CF6" strokeWidth={2} dot={{ r: 3 }} name="Сон" />
+                <Line type="monotone" dataKey="value" stroke="#8B5CF6" strokeWidth={2} dot={{ r: 3 }} name={t("diary.chartLabelSleep")} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -173,7 +177,7 @@ function ChartsSection({ entries }) {
         {/* Blood pressure chart — systolic + diastolic on same chart */}
         {hasEnough(bpData) && (
           <div className="hd-chart-wrap">
-            <span className="hd-chart-wrap__title">Давление, мм рт.ст.</span>
+            <span className="hd-chart-wrap__title">{t("diary.chartBP")}</span>
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={bpData} {...chartProps}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -183,8 +187,8 @@ function ChartsSection({ entries }) {
                   contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid var(--border)" }}
                 />
                 <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Line type="monotone" dataKey="sys" stroke="var(--red)"    strokeWidth={2} dot={{ r: 3 }} name="Систолическое" />
-                <Line type="monotone" dataKey="dia" stroke="var(--primary)" strokeWidth={2} dot={{ r: 3 }} name="Диастолическое" />
+                <Line type="monotone" dataKey="sys" stroke="var(--red)"    strokeWidth={2} dot={{ r: 3 }} name={t("diary.chartLabelSys")} />
+                <Line type="monotone" dataKey="dia" stroke="var(--primary)" strokeWidth={2} dot={{ r: 3 }} name={t("diary.chartLabelDia")} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -195,6 +199,7 @@ function ChartsSection({ entries }) {
 }
 
 export default function HealthDiaryPage() {
+  const { t } = useTranslation();
   const [entries,        setEntries]        = useState([]);
   const [summary,        setSummary]        = useState(null);
   const [loadingEntries, setLoadingEntries] = useState(true);
@@ -249,7 +254,7 @@ export default function HealthDiaryPage() {
     try {
       await createDiaryEntry(payload);
       setShowForm(false);
-      showToast("Запись добавлена");
+      showToast(t("diary.toastAdded"));
       await loadEntries();
       await loadSummary();
     } catch (err) {
@@ -264,7 +269,7 @@ export default function HealthDiaryPage() {
     try {
       await deleteDiaryEntry(id);
       setEntries(prev => prev.filter(e => e.id !== id));
-      showToast("Запись удалена");
+      showToast(t("diary.toastDeleted"));
       loadSummary();
     } catch (err) {
       console.error("Failed to delete diary entry:", err);
@@ -285,16 +290,14 @@ export default function HealthDiaryPage() {
         {/* Page header */}
         <div className="hd-header">
           <div>
-            <h1 className="hd-header__title">Дневник здоровья</h1>
-            <p className="hd-header__desc">
-              Ежедневные замеры помогают отслеживать динамику показателей и замечать изменения раньше.
-            </p>
+            <h1 className="hd-header__title">{t("diary.title")}</h1>
+            <p className="hd-header__desc">{t("diary.desc")}</p>
           </div>
           <button
             className="btn-primary hd-header__add-btn"
             onClick={() => setShowForm(v => !v)}
           >
-            {showForm ? "Скрыть форму" : "+ Добавить запись"}
+            {showForm ? t("diary.hideForm") : t("diary.addEntry")}
           </button>
         </div>
 
@@ -305,17 +308,13 @@ export default function HealthDiaryPage() {
             <line x1="12" y1="8" x2="12" y2="12"/>
             <line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
-          <p>
-            Информация в дневнике используется для динамического наблюдения.
-            AI-аналитика <strong>не является медицинским заключением</strong> — окончательные
-            рекомендации даёт ваш лечащий врач.
-          </p>
+          <p>{t("diary.disclaimerText")}</p>
         </div>
 
         {/* Add entry form */}
         {showForm && (
           <div className="hd-section">
-            <h3 className="hd-section__title">Новая запись</h3>
+            <h3 className="hd-section__title">{t("diary.newEntry")}</h3>
             <HealthDiaryEntryForm
               onSubmit={handleSubmit}
               onCancel={() => setShowForm(false)}
@@ -326,7 +325,7 @@ export default function HealthDiaryPage() {
 
         {/* Summary statistics */}
         <div className="hd-section">
-          <h3 className="hd-section__title">Статистика</h3>
+          <h3 className="hd-section__title">{t("diary.stats")}</h3>
           <SummaryCard summary={summary} loading={loadingSummary} />
         </div>
 
@@ -338,7 +337,7 @@ export default function HealthDiaryPage() {
         {/* Entry list */}
         <div className="hd-section">
           <h3 className="hd-section__title">
-            Журнал записей
+            {t("diary.journal")}
             {!loadingEntries && entries.length > 0 && (
               <span className="hd-section__count">{entries.length}</span>
             )}

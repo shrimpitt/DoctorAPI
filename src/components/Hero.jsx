@@ -1,74 +1,34 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useUserAuth } from "../context/UserAuthContext";
 import "./Hero.css";
 
-function RotatingBadge() {
-  return (
-    <div className="hero__rotating-badge" aria-hidden="true">
-      <svg width="130" height="130" viewBox="0 0 130 130" fill="none">
-        <defs>
-          <path
-            id="badge-circle"
-            d="M 65,65 m -48,0 a 48,48 0 1,1 96,0 a 48,48 0 1,1 -96,0"
-          />
-        </defs>
-        <text className="hero__badge-ring-text">
-          <textPath href="#badge-circle" startOffset="0%">
-            ЭНДОКРИНОЛОГ · ИНТЕГРАТИВНАЯ МЕДИЦИНА · АНТИЭЙДЖИНГ ·
-          </textPath>
-        </text>
-      </svg>
-      <div className="hero__badge-center">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5B4FCF" strokeWidth="1.8">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          <polyline points="9 12 11 14 15 10" strokeWidth="2"/>
-        </svg>
-      </div>
-    </div>
-  );
-}
-
-const features = [
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-      </svg>
-    ),
-    text: "Восстановите гормональный баланс",
-  },
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-      </svg>
-    ),
-    text: "Верните энергию и молодость",
-  },
-  {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M12 6v6l4 2"/>
-      </svg>
-    ),
-    text: "Замедлите процессы старения",
-  },
+const featureIcons = [
+  <svg key="1" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+  </svg>,
+  <svg key="2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+  </svg>,
+  <svg key="3" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 6v6l4 2"/>
+  </svg>,
 ];
 
-const stats = [
-  { num: "15+", label: "лет практики" },
-  { num: "3000+", label: "пациентов" },
-  { num: "12+", label: "сертификатов" },
-];
+const statNums = ["15+", "3000+", "12+"];
+const statKeys = ["stat1", "stat2", "stat3"];
 
 export default function Hero() {
+  const { t } = useTranslation();
   // Use UserAuthContext — never AdminAuthContext here
   const { isAuthenticated, user } = useUserAuth();
 
   // First word of full name for the greeting
   const firstName = user?.fullName?.split(" ")[0];
+
+  const ringText = t("hero.ringText");
 
   return (
     <section className="hero">
@@ -83,49 +43,64 @@ export default function Hero() {
               <line x1="8" y1="2" x2="8" y2="6"/>
               <line x1="3" y1="10" x2="21" y2="10"/>
             </svg>
-            Принимает онлайн и офлайн
+            {t("hero.badge")}
           </div>
 
           {/* Title — personalised if user is logged in */}
           {isAuthenticated && firstName ? (
             <h1 className="hero__title">
-              Здравствуйте,{" "}
+              {t("hero.greeting")},{" "}
               <em>{firstName}</em>!<br />
-              Ваше здоровье —<br />наш приоритет
+              {t("hero.titleUser1")}<br />{t("hero.titleUser2")}
             </h1>
           ) : (
             <h1 className="hero__title">
               <span className="hero__title-line1">
-                Гормональный баланс
-                <RotatingBadge />
+                {t("hero.titleMain1")}
+                <div className="hero__rotating-badge" aria-hidden="true">
+                  <svg width="130" height="130" viewBox="0 0 130 130" fill="none">
+                    <defs>
+                      <path id="badge-circle" d="M 65,65 m -48,0 a 48,48 0 1,1 96,0 a 48,48 0 1,1 -96,0"/>
+                    </defs>
+                    <text className="hero__badge-ring-text">
+                      <textPath href="#badge-circle" startOffset="0%">{ringText}</textPath>
+                    </text>
+                  </svg>
+                  <div className="hero__badge-center">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5B4FCF" strokeWidth="1.8">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                      <polyline points="9 12 11 14 15 10" strokeWidth="2"/>
+                    </svg>
+                  </div>
+                </div>
               </span>
-              <em>и молодость</em>
+              <em>{t("hero.titleMain2")}</em>
             </h1>
           )}
 
           {/* Feature cards */}
           <div className="hero__features">
-            {features.map((f, i) => (
+            {featureIcons.map((icon, i) => (
               <div className="hero__feature" key={i}>
-                <div className="hero__feature-icon">{f.icon}</div>
-                <span>{f.text}</span>
+                <div className="hero__feature-icon">{icon}</div>
+                <span>{t(`hero.feature${i + 1}`)}</span>
               </div>
             ))}
           </div>
 
           {/* CTA */}
           <Link to="/booking" className="hero__cta">
-            Записаться на консультацию
+            {t("hero.cta")}
           </Link>
 
           {/* Stats */}
           <div className="hero__stats">
-            {stats.map((s, i) => (
+            {statNums.map((num, i) => (
               <React.Fragment key={i}>
                 {i > 0 && <div className="hero__stats-divider" />}
                 <div className="hero__stat">
-                  <span className="hero__stat-num">{s.num}</span>
-                  <span className="hero__stat-label">{s.label}</span>
+                  <span className="hero__stat-num">{num}</span>
+                  <span className="hero__stat-label">{t(`hero.${statKeys[i]}`)}</span>
                 </div>
               </React.Fragment>
             ))}
@@ -155,9 +130,7 @@ export default function Hero() {
               <path id="circle-path" d="M 150,150 m -110,0 a 110,110 0 1,1 220,0 a 110,110 0 1,1 -220,0"/>
             </defs>
             <text className="hero__ring-text">
-              <textPath href="#circle-path" startOffset="0%">
-                ЭНДОКРИНОЛОГ · ИНТЕГРАТИВНАЯ МЕДИЦИНА · АНТИЭЙДЖИНГ ·
-              </textPath>
+              <textPath href="#circle-path" startOffset="0%">{ringText}</textPath>
             </text>
           </svg>
         </div>

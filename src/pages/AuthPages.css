@@ -9,7 +9,7 @@
 }
 
 .auth-card {
-  background: white;
+  background: var(--bg);
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
   padding: 40px;
@@ -141,7 +141,7 @@
   transition: all 0.2s ease;
 }
 .auth-role-btn.active {
-  background: white;
+  background: var(--bg);
   color: var(--blue);
   box-shadow: var(--shadow-sm);
 }
