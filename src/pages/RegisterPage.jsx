@@ -3,10 +3,18 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useUserAuth } from "../context/UserAuthContext";
 import "./AuthPages.css";
 
-/** Parse the error text from the backend — may be JSON or plain string */
+/** Parse the error from the backend into a user-friendly Russian string */
 function extractErrorMessage(rawMessage) {
+  if (!rawMessage || rawMessage === "Failed to fetch" || rawMessage.startsWith("NetworkError")) {
+    return "Не удалось связаться с сервером. Убедитесь, что бэкенд запущен.";
+  }
   try {
     const parsed = JSON.parse(rawMessage);
+    // ASP.NET validation errors: { errors: { Field: ["msg"] } }
+    if (parsed.errors) {
+      const first = Object.values(parsed.errors).flat()[0];
+      if (first) return first;
+    }
     return parsed.message || parsed.title || rawMessage;
   } catch {
     return rawMessage;

@@ -7,6 +7,8 @@ import ProtectedRoute          from "./components/ProtectedRoute";
 import UserProtectedRoute      from "./components/UserProtectedRoute";
 
 import LandingPage       from "./pages/LandingPage";
+import CoursesPage       from "./pages/CoursesPage";
+import CourseDetailPage  from "./pages/CourseDetailPage";
 import BookingPage       from "./pages/BookingPage";
 import ShopPage          from "./pages/ShopPage";
 import ProductPage       from "./pages/ProductPage";
@@ -37,11 +39,13 @@ export default function App() {
             <CartProvider>
               <Routes>
                 {/* Public routes */}
-                <Route path="/"         element={<LandingPage />} />
-                <Route path="/login"    element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-                <Route path="/shop"     element={<ShopPage />} />
-                <Route path="/shop/:id" element={<ProductPage />} />
+                <Route path="/"              element={<LandingPage />} />
+                <Route path="/courses"       element={<CoursesPage />} />
+                <Route path="/courses/:id"   element={<CourseDetailPage />} />
+                <Route path="/login"         element={<LoginPage />} />
+                <Route path="/register"      element={<RegisterPage />} />
+                <Route path="/shop"          element={<ShopPage />} />
+                <Route path="/shop/:id"      element={<ProductPage />} />
 
                 {/* Booking requires user login (UserProtectedRoute) */}
                 <Route path="/booking" element={

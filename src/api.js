@@ -1,4 +1,6 @@
-const BASE_URL = "http://localhost:8080";
+// Empty BASE_URL — all /api requests go through the Vite proxy (vite.config.js).
+// Proxy target: http://localhost:5018 (local dev). For Docker: change target to http://localhost:8080.
+const BASE_URL = "";
 
 // ── Admin auth headers (for admin panel endpoints) ──────
 function authHeaders() {

@@ -6,10 +6,10 @@ import CartSidebar from "./shop/CartSidebar";
 import SearchBar from "./SearchBar";
 import "./Navbar.css";
 
+// Section links scroll to landing-page anchors; "Курсы" is now a page route (see below).
 const sectionLinks = [
   { id: "about",    label: "О докторе" },
   { id: "services", label: "Услуги" },
-  { id: "courses",  label: "Курсы" },
   { id: "reviews",  label: "Отзывы" },
 ];
 
@@ -69,7 +69,8 @@ export default function Navbar({ activeSection, setActiveSection }) {
 
           {/* Section links */}
           <ul className={`navbar__links ${menuOpen ? "navbar__links--open" : ""}`}>
-            {sectionLinks.map((link) => (
+            {/* О докторе, Услуги — scroll to landing sections */}
+            {sectionLinks.slice(0, 2).map((link) => (
               <li key={link.id}>
                 <button
                   className={`navbar__link ${activeSection === link.id ? "navbar__link--active" : ""}`}
@@ -79,6 +80,30 @@ export default function Navbar({ activeSection, setActiveSection }) {
                 </button>
               </li>
             ))}
+
+            {/* Курсы — navigates to the full courses page */}
+            <li>
+              <Link
+                to="/courses"
+                className="navbar__link"
+                onClick={() => setMenuOpen(false)}
+              >
+                Курсы
+              </Link>
+            </li>
+
+            {/* Отзывы — scroll to landing section */}
+            {sectionLinks.slice(2).map((link) => (
+              <li key={link.id}>
+                <button
+                  className={`navbar__link ${activeSection === link.id ? "navbar__link--active" : ""}`}
+                  onClick={() => handleScrollNav(link.id)}
+                >
+                  {link.label}
+                </button>
+              </li>
+            ))}
+
             <li>
               <Link to="/shop" className="navbar__link" onClick={() => setMenuOpen(false)}>
                 Магазин

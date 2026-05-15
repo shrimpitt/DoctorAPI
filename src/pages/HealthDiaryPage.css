@@ -3,10 +3,11 @@
 .hd-page {
   min-height: 100vh;
   background: var(--bg-section);
+  padding-top: 80px; /* clearance for fixed navbar */
 }
 
 .hd-page__inner {
-  padding: 40px 0 80px;
+  padding: 32px 0 80px;
 }
 
 /* ── Page header ── */

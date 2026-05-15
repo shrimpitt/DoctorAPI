@@ -1,0 +1,135 @@
+.courses-page {
+  min-height: 100vh;
+  padding-top: 80px; /* fixed navbar clearance */
+}
+
+/* ── Hero ── */
+.courses-page__hero {
+  background: var(--primary-light);
+  padding: 64px 0 52px;
+  text-align: center;
+}
+
+.courses-page__hero .section-tag {
+  margin-bottom: 14px;
+}
+
+.courses-page__hero h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 700;
+  color: var(--charcoal);
+  line-height: 1.1;
+  margin-bottom: 14px;
+}
+
+.courses-page__hero p {
+  font-size: 18px;
+  color: var(--mid-gray);
+  max-width: 540px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ── Grid ── */
+.courses-page__body {
+  padding: 64px 0 80px;
+}
+
+.courses-page__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+}
+
+/* ── Card ── */
+.cp-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 36px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.cp-card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-5px);
+}
+
+.cp-card__icon {
+  width: 60px;
+  height: 60px;
+  background: var(--primary-light);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  transition: background 0.3s ease;
+}
+
+.cp-card:hover .cp-card__icon {
+  background: var(--primary);
+  color: white;
+}
+
+.cp-card__title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--charcoal);
+  line-height: 1.2;
+}
+
+.cp-card__desc {
+  font-size: 15px;
+  color: var(--mid-gray);
+  line-height: 1.7;
+  flex: 1;
+}
+
+.cp-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cp-card__meta span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.cp-card__cta {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-top: 4px;
+  transition: color 0.2s ease;
+}
+
+.cp-card:hover .cp-card__cta {
+  color: var(--green);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .courses-page__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cp-card {
+    padding: 24px;
+  }
+}

@@ -1,0 +1,158 @@
+.enroll-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 26, 46, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  animation: enrollFadeIn 0.2s ease;
+}
+
+.enroll-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(520px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
+  z-index: 1001;
+  animation: enrollSlideUp 0.25s ease;
+}
+
+@keyframes enrollFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes enrollSlideUp {
+  from { opacity: 0; transform: translate(-50%, -47%); }
+  to   { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* ── Header ── */
+.enroll-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 28px 28px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.enroll-modal__title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--mid-gray);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.enroll-modal__course-name {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--charcoal);
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.enroll-modal__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--mid-gray);
+  padding: 6px;
+  border-radius: var(--radius-xs);
+  flex-shrink: 0;
+  transition: color 0.2s ease, background 0.2s ease;
+  margin-top: -2px;
+}
+
+.enroll-modal__close:hover {
+  color: var(--charcoal);
+  background: var(--cream);
+}
+
+/* ── Form ── */
+.enroll-modal__form {
+  padding: 24px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.enroll-modal__free-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--green);
+  background: rgba(76, 175, 125, 0.1);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  width: fit-content;
+  margin-bottom: 4px;
+}
+
+/* ── Error ── */
+.enroll-modal__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--red);
+  background: var(--red-light);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  line-height: 1.55;
+}
+
+.enroll-modal__error svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── Submit button ── */
+.enroll-modal__submit {
+  width: 100%;
+  justify-content: center;
+  padding: 14px;
+  font-size: 16px;
+  margin-top: 4px;
+}
+
+/* ── Success state ── */
+.enroll-modal__success {
+  padding: 52px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.enroll-modal__success-icon {
+  margin-bottom: 4px;
+}
+
+.enroll-modal__success h3 {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--charcoal);
+}
+
+.enroll-modal__success p {
+  font-size: 15px;
+  color: var(--mid-gray);
+  max-width: 340px;
+  line-height: 1.65;
+}
