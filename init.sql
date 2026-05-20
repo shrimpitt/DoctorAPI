@@ -9,6 +9,18 @@ CREATE TABLE IF NOT EXISTS product_categories (
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS admins (
+    id BIGSERIAL PRIMARY KEY,
+    full_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL DEFAULT 'Admin',
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+
 CREATE TABLE IF NOT EXISTS products (
     id BIGSERIAL PRIMARY KEY,
     category_id BIGINT REFERENCES product_categories(id) ON DELETE SET NULL,
@@ -136,6 +148,10 @@ CREATE TABLE IF NOT EXISTS settings (
 INSERT INTO product_categories (name, slug, description, is_active, sort_order)
 VALUES ('Пептиды', 'peptides', 'Пептидная продукция', TRUE, 1)
 ON CONFLICT (slug) DO NOTHING;
+
+INSERT INTO admins (full_name, email, password_hash, role, is_active)
+VALUES ('Main Admin', 'admin@doctor.com', '$2a$11$9maZN/3ssweYTd/Jl5/trO3Tzfwe3uk/iD.m7duEt7eodx0wWJyvS', 'Admin', TRUE)
+ON CONFLICT (email) DO NOTHING;
 
 INSERT INTO products (category_id, name, slug, sku, short_description, full_description, price, stock_qty, is_active, main_image_url)
 VALUES
