@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DoctorAPI.Models
 {
@@ -36,7 +36,7 @@ namespace DoctorAPI.Models
         public string Status { get; set; }
 
         [Column("payment_status")]
-        public string PaymentStatus { get; set; }
+        public string PaymentStatus { get; set; } = "awaiting_payment";
 
         [Column("payment_method")]
         public string? PaymentMethod { get; set; }

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using DoctorAPI.Models;
 
 namespace DoctorAPI.Data
@@ -71,6 +71,9 @@ namespace DoctorAPI.Data
                     .WithMany()
                     .HasForeignKey(e => e.UserId)
                     .OnDelete(DeleteBehavior.SetNull);
+
+                entity.Property(o => o.PaymentStatus)
+                    .HasDefaultValue("awaiting_payment");
             });
 
             modelBuilder.Entity<Appointment>(entity =>
