@@ -10,22 +10,19 @@ namespace DoctorAPI.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "payment_status",
-                schema: "public",
-                table: "orders",
-                type: "text",
-                nullable: false,
-                defaultValue: "awaiting_payment");
+            migrationBuilder.Sql("""
+                ALTER TABLE public.orders
+                ADD COLUMN IF NOT EXISTS payment_status text NOT NULL DEFAULT 'awaiting_payment';
+            """);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "payment_status",
-                schema: "public",
-                table: "orders");
+            migrationBuilder.Sql("""
+                ALTER TABLE public.orders
+                DROP COLUMN IF EXISTS payment_status;
+            """);
         }
     }
 }
