@@ -52,6 +52,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.Configure<PayPalOptions>(builder.Configuration.GetSection("PayPal"));
 builder.Services.AddHttpClient<IPayPalService, PayPalService>();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IWhatsAppNotifier, WhatsAppNotifier>();
 
 // JWT
 var jwtKey = builder.Configuration["Jwt:Key"];

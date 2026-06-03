@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using DoctorAPI.Data;
 using DoctorAPI.Models;
 using DoctorAPI.DTOs;
+using DoctorAPI.Services;
 
 namespace DoctorAPI.Controllers
 {
@@ -13,10 +14,12 @@ namespace DoctorAPI.Controllers
     public class AppointmentsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IWhatsAppNotifier _whatsAppNotifier;
 
-        public AppointmentsController(AppDbContext context)
+        public AppointmentsController(AppDbContext context, IWhatsAppNotifier whatsAppNotifier)
         {
             _context = context;
+            _whatsAppNotifier = whatsAppNotifier;
         }
 
         [HttpPost]
@@ -83,6 +86,35 @@ namespace DoctorAPI.Controllers
             slot.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
+
+            try
+            {
+                var consultationType = await _context.ConsultationTypes
+                    .FirstOrDefaultAsync(c => c.Id == appointment.ConsultationTypeId);
+                var consultationTypeName = consultationType?.Name ?? "не указано";
+
+                var fullName = string.IsNullOrWhiteSpace(appointment.FullName) ? "не указано" : appointment.FullName;
+                var phone = string.IsNullOrWhiteSpace(appointment.Phone) ? "не указано" : appointment.Phone;
+                var email = string.IsNullOrWhiteSpace(appointment.Email) ? "не указано" : appointment.Email;
+                var comment = string.IsNullOrWhiteSpace(appointment.Comment) ? "не указано" : appointment.Comment;
+
+                var slotDateStr = slot != null ? slot.SlotDate.ToString("yyyy-MM-dd") : "не указано";
+                var startTimeStr = slot != null ? slot.StartTime.ToString(@"hh\:mm") : "не указано";
+
+                var message = $"Новая запись на приём:\n\n" +
+                              $"Имя: {fullName}\n" +
+                              $"Телефон: {phone}\n" +
+                              $"Email: {email}\n" +
+                              $"Тип консультации: {consultationTypeName}\n" +
+                              $"Дата и время: {slotDateStr} {startTimeStr}\n" +
+                              $"Комментарий: {comment}";
+
+                await _whatsAppNotifier.SendNotificationAsync(message);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"WhatsApp notification skipped due to error: {ex.Message}");
+            }
 
             return Ok(new
             {
