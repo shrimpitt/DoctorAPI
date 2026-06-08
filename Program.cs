@@ -9,6 +9,21 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// CORS for deployed frontend and local development
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(
+                "https://doctor-frontend-gold.vercel.app",
+                "http://localhost:5173",
+                "http://localhost:3000"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 // Add services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -77,24 +92,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowReactApp", policy =>
-    {
-        policy
-            .WithOrigins(
-                "http://localhost:3000",
-                "http://localhost:5173"
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
-
 var app = builder.Build();
 
-// Fallback middleware for unapplied database migrations (missing payment_status column)
+// Apply CORS before authentication/authorization
+app.UseCors("AllowFrontend");
+
+// Fallback middleware for unapplied database migrations
 app.Use(async (context, next) =>
 {
     try
@@ -104,17 +107,22 @@ app.Use(async (context, next) =>
     catch (Exception ex)
     {
         var exString = ex.ToString();
-        if (exString.Contains("payment_status") && (exString.Contains("42703") || exString.Contains("does not exist")))
+
+        if (exString.Contains("payment_status") &&
+            (exString.Contains("42703") || exString.Contains("does not exist")))
         {
             context.Response.StatusCode = 500;
             context.Response.ContentType = "application/json";
+
             await context.Response.WriteAsJsonAsync(new
             {
                 error = "Database migration mismatch",
                 message = "The required database column 'payment_status' is missing on the 'orders' table. Please apply the latest database migrations."
             });
+
             return;
         }
+
         throw;
     }
 });
@@ -130,6 +138,7 @@ using (var scope = app.Services.CreateScope())
 
 // Swagger
 var enableSwaggerInProd = builder.Configuration.GetValue<bool>("Swagger:EnableInProduction");
+
 if (app.Environment.IsDevelopment() || enableSwaggerInProd)
 {
     app.UseSwagger();
@@ -140,9 +149,6 @@ if (!isRunningInContainer)
 {
     app.UseHttpsRedirection();
 }
-
-// CORS
-app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
