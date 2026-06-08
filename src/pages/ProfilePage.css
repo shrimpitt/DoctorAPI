@@ -204,9 +204,42 @@ a.profile-nav__btn--diary:hover { background: var(--primary-light); color: var(-
   gap: 12px;
 }
 .profile-list-item:hover { border-color: var(--blue); }
-.profile-list-item__main { display: flex; flex-direction: column; gap: 3px; }
+.profile-list-item__main { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
 .profile-list-item__title { font-size: 14px; font-weight: 600; color: var(--text); }
 .profile-list-item__sub { font-size: 12px; color: var(--text-secondary); }
+
+/* Order item — right side with badge + track button */
+.profile-list-item--order { align-items: flex-start; }
+.profile-list-item__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.profile-track-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--primary);
+  background: var(--primary-light);
+  border: 1px solid var(--primary-light);
+  border-radius: var(--radius-xs);
+  padding: 5px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+.profile-track-btn:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
 
 /* Empty state */
 .profile-empty {

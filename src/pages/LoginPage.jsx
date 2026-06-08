@@ -1,23 +1,22 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useUserAuth } from "../context/UserAuthContext";
 import "./AuthPages.css";
 
-/** Parse the error from the backend into a user-friendly Russian string */
-function extractErrorMessage(rawMessage) {
+function extractErrorMessage(rawMessage, tServerError, tLoginError) {
   if (!rawMessage || rawMessage === "Failed to fetch" || rawMessage.startsWith("NetworkError")) {
-    return "Не удалось связаться с сервером. Убедитесь, что бэкенд запущен.";
+    return tServerError;
   }
   try {
     const parsed = JSON.parse(rawMessage);
-    // ASP.NET validation errors: { errors: { Field: ["msg"] } }
     if (parsed.errors) {
       const first = Object.values(parsed.errors).flat()[0];
       if (first) return first;
     }
     return parsed.message || parsed.title || rawMessage;
   } catch {
-    return rawMessage;
+    return rawMessage || tLoginError;
   }
 }
 
@@ -25,6 +24,7 @@ export default function LoginPage() {
   const { login }  = useUserAuth();
   const navigate   = useNavigate();
   const location   = useLocation();
+  const { t }      = useTranslation();
   const from       = location.state?.from?.pathname || "/";
 
   const [form, setForm]         = useState({ email: "", password: "" });
@@ -41,9 +41,9 @@ export default function LoginPage() {
   const validate = () => {
     const e = {};
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      e.email = "Введите корректный email";
+      e.email = t("loginPage.emailError");
     if (form.password.length < 6)
-      e.password = "Пароль — минимум 6 символов";
+      e.password = t("loginPage.passError");
     return e;
   };
 
@@ -57,9 +57,8 @@ export default function LoginPage() {
       await login(form.email, form.password);
       navigate(from, { replace: true });
     } catch (err) {
-      // Log raw error for debugging, show parsed message to user
       console.error("Login error:", err.message);
-      setApiError(extractErrorMessage(err.message) || "Ошибка входа. Попробуйте позже.");
+      setApiError(extractErrorMessage(err.message, t("loginPage.serverError"), t("loginPage.loginError")));
     } finally {
       setLoading(false);
     }
@@ -77,12 +76,12 @@ export default function LoginPage() {
           <span>Dr. Kadyrbekova</span>
         </Link>
 
-        <h1 className="auth-title">Войти в аккаунт</h1>
-        <p className="auth-subtitle">Добро пожаловать обратно</p>
+        <h1 className="auth-title">{t("loginPage.title")}</h1>
+        <p className="auth-subtitle">{t("loginPage.subtitle")}</p>
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label>Email</label>
+            <label>{t("loginPage.emailLabel")}</label>
             <input
               type="email"
               placeholder="you@example.com"
@@ -95,7 +94,7 @@ export default function LoginPage() {
           </div>
 
           <div className="form-group">
-            <label>Пароль</label>
+            <label>{t("loginPage.passLabel")}</label>
             <input
               type="password"
               placeholder="••••••••"
@@ -109,14 +108,14 @@ export default function LoginPage() {
           {apiError && <p className="auth-error">{apiError}</p>}
 
           <button type="submit" className="btn-primary auth-submit" disabled={loading}>
-            {loading ? "Входим…" : "Войти"}
+            {loading ? t("loginPage.loading") : t("loginPage.submit")}
           </button>
         </form>
 
         <p className="auth-switch">
-          Нет аккаунта?{" "}
+          {t("loginPage.noAccount")}{" "}
           <Link to="/register" state={{ from: location.state?.from }}>
-            Зарегистрироваться
+            {t("loginPage.registerLink")}
           </Link>
         </p>
       </div>

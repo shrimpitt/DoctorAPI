@@ -39,6 +39,12 @@ export const getScheduleSlots   = () => request("/api/doctor-schedule-slots/avai
 export const createScheduleSlot = (data) =>
   request("/api/doctor-schedule-slots", { method: "POST", body: JSON.stringify(data) });
 
+// POST /api/doctor-schedule-slots/bulk  [Admin]
+// Creates multiple slots in one request. Uses the shared request() helper so
+// the admin Bearer token from authHeaders() is included automatically.
+export const createBulkSlots = (data) =>
+  request("/api/doctor-schedule-slots/bulk", { method: "POST", body: JSON.stringify(data) });
+
 // ── Appointments ─────────────────────────────────────────
 // User creates appointment — backend reads userId from Bearer token
 export const createAppointment = (data) =>
@@ -173,6 +179,34 @@ export async function getCurrentUser() {
 
 // ── Payments (mock + PayPal) ──────────────────────────────
 // All payment endpoints require user_token.
+// ── New payment endpoints (POST /api/payments/*) ──────────
+// These are thin wrappers over the same mock logic, but exposed
+// via /api/payments/* for cleaner separation.
+// TODO (production): Replace body handling with Stripe/Kaspi/CloudPayments SDK calls.
+
+// POST /api/payments/initiate
+// Body: { orderId, paymentMethod, cardNetwork?, cardLastFour? }
+export const initiatePayment = (data) =>
+  request("/api/payments/initiate", {
+    method:  "POST",
+    headers: userAuthHeaders(),
+    body:    JSON.stringify(data),
+  });
+
+// POST /api/payments/confirm
+// Body: { orderId, paymentSessionId, mockSuccess, cardLastFour?, cardNetwork? }
+export const confirmPayment = (data) =>
+  request("/api/payments/confirm", {
+    method:  "POST",
+    headers: userAuthHeaders(),
+    body:    JSON.stringify(data),
+  });
+
+// GET /api/payments/{orderId}/status
+export const getPaymentStatus = (orderId) =>
+  request(`/api/payments/${orderId}/status`, {
+    headers: userAuthHeaders(),
+  });
 
 // Step 1: Initialize payment session for an order.
 // POST /api/orders/{id}/payment/init
@@ -218,6 +252,26 @@ export const capturePayPalOrder = (orderId, data) =>
     headers: userAuthHeaders(),
     body:    JSON.stringify(data),
   });
+
+// ── Health Diary — Peptide Recommendations ────────────────
+// Fields returned: { productId, productName, reasoning }
+// Arrays may come as plain [] or wrapped in { $values: [] }.
+
+// POST /api/health-diary/recommend-products  [User]
+// Analyses current user's diary entries and saves/returns recommendations.
+export const generateMyRecommendations = () =>
+  request("/api/health-diary/recommend-products", {
+    method:  "POST",
+    headers: userAuthHeaders(),
+  });
+
+// GET /api/health-diary/my/recommendations  [User]
+export const getMyRecommendations = () =>
+  request("/api/health-diary/my/recommendations", { headers: userAuthHeaders() });
+
+// GET /api/health-diary/admin/user/{userId}/recommendations  [Admin]
+export const getAdminUserRecommendations = (userId) =>
+  adminFetch(`/api/health-diary/admin/user/${userId}/recommendations`);
 
 // ── Health Diary (admin) ─────────────────────────────────
 // All endpoints require admin_token Bearer.
@@ -269,6 +323,10 @@ export const getAiSummaries = (userId) =>
 // All endpoints require user_token Bearer. camelCase per API contract.
 
 async function diaryFetch(path, options = {}) {
+  const token = localStorage.getItem("user_token");
+  if (!token) {
+    console.warn("diaryFetch: user_token is missing — request will be rejected by the server");
+  }
   const res = await fetch(`${BASE_URL}${path}`, {
     ...options,
     headers: {
@@ -280,8 +338,12 @@ async function diaryFetch(path, options = {}) {
   });
   if (!res.ok) {
     const err = await res.text();
-    console.error(`Health Diary error [${res.status}]:`, err);
-    throw new Error(err);
+    if (res.status === 401 || res.status === 403) {
+      console.error(`diaryFetch [${res.status}] ${path}: token=${token ? "present" : "MISSING"}`, err);
+    } else {
+      console.error(`Health Diary error [${res.status}] ${path}:`, err);
+    }
+    throw new Error(`HTTP ${res.status}: ${err}`);
   }
   if (res.status === 204) return null;
   return res.json();

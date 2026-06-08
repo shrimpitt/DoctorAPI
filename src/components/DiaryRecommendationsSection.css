@@ -1,0 +1,315 @@
+/* ── Diary Recommendations Section ──────────────────────────────────────────── */
+
+.drs {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────────── */
+.drs__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 28px;
+  background: linear-gradient(135deg, var(--primary-pale) 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.drs__header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.drs__header-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--primary-light);
+  border: 1px solid rgba(91, 79, 207, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.drs__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--charcoal);
+  margin: 0 0 3px;
+  line-height: 1.3;
+}
+
+.drs__subtitle {
+  font-size: 13px;
+  color: var(--mid-gray);
+  margin: 0;
+}
+
+/* Generate button */
+.drs__generate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 20px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(91, 79, 207, 0.25);
+}
+.drs__generate-btn:hover:not(:disabled) {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(91, 79, 207, 0.35);
+}
+.drs__generate-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ── Body ───────────────────────────────────────────────────────────────────── */
+.drs__body {
+  padding: 24px 28px;
+}
+
+/* ── State screens ──────────────────────────────────────────────────────────── */
+.drs__state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--mid-gray);
+}
+.drs__state p {
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 420px;
+  margin: 0;
+}
+.drs__state h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--charcoal);
+  margin: 0;
+}
+
+.drs__state--error {
+  color: var(--red);
+}
+.drs__state--error svg { color: var(--red); }
+
+.drs__empty-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: var(--primary-light);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.drs__state--empty-diary .drs__empty-icon {
+  background: var(--cream);
+  color: var(--mid-gray);
+}
+
+.drs__diary-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 22px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+  margin-top: 4px;
+}
+.drs__diary-link:hover { background: var(--primary-dark); }
+
+/* ── Disclaimer ─────────────────────────────────────────────────────────────── */
+.drs__disclaimer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #FFF8E6;
+  border: 1px solid #F59E0B44;
+  border-radius: var(--radius-xs);
+  font-size: 12px;
+  color: #78350F;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+[data-theme="dark"] .drs__disclaimer {
+  background: rgba(245,158,11,0.1);
+  color: #FDE68A;
+  border-color: rgba(245,158,11,0.25);
+}
+.drs__disclaimer svg { flex-shrink: 0; color: #F59E0B; }
+
+/* ── Cards grid ─────────────────────────────────────────────────────────────── */
+.drs__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* ── Card ───────────────────────────────────────────────────────────────────── */
+.drs__card {
+  position: relative;
+  background: var(--bg-section);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.drs__card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 16px rgba(91, 79, 207, 0.12);
+}
+
+.drs__card-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--primary-light);
+  border: 1px solid rgba(91, 79, 207, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  margin-bottom: 14px;
+}
+
+.drs__card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0;
+}
+
+.drs__card-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--charcoal);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin: 0 0 10px;
+  line-height: 1.3;
+}
+
+/* Reasoning is the key piece — make it stand out */
+.drs__card-reasoning {
+  font-size: 13px;
+  color: var(--mid-gray);
+  line-height: 1.65;
+  margin: 0 0 14px;
+  flex: 1;
+}
+
+.drs__card-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--primary-light);
+  border-radius: 20px;
+  padding: 3px 10px;
+  margin-bottom: 16px;
+  width: fit-content;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* ── Card action buttons ─────────────────────────────────────────────────────── */
+.drs__card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.drs__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: var(--radius-xs);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  text-decoration: none;
+  white-space: nowrap;
+  border: none;
+}
+
+.drs__btn--outline {
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--charcoal);
+}
+.drs__btn--outline:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+
+.drs__btn--cart {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(91, 79, 207, 0.2);
+}
+.drs__btn--cart:hover:not(:disabled) { background: var(--primary-dark); }
+.drs__btn--cart:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.drs__btn--added {
+  background: var(--green) !important;
+}
+.drs__btn--err {
+  background: var(--red) !important;
+}
+
+/* ── Dark theme ─────────────────────────────────────────────────────────────── */
+[data-theme="dark"] .drs {
+  background: var(--warm-white);
+}
+[data-theme="dark"] .drs__header {
+  background: linear-gradient(135deg, rgba(91,79,207,0.12) 0%, var(--warm-white) 100%);
+}
+[data-theme="dark"] .drs__card {
+  background: var(--bg-section);
+}
+[data-theme="dark"] .drs__btn--outline {
+  background: var(--bg);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .drs__header { padding: 18px 16px; }
+  .drs__body   { padding: 20px 16px; }
+  .drs__grid   { grid-template-columns: 1fr; }
+  .drs__generate-btn { width: 100%; justify-content: center; }
+}

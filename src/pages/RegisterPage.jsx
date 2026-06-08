@@ -1,23 +1,22 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useUserAuth } from "../context/UserAuthContext";
 import "./AuthPages.css";
 
-/** Parse the error from the backend into a user-friendly Russian string */
-function extractErrorMessage(rawMessage) {
+function extractErrorMessage(rawMessage, tServerError, tRegisterError) {
   if (!rawMessage || rawMessage === "Failed to fetch" || rawMessage.startsWith("NetworkError")) {
-    return "Не удалось связаться с сервером. Убедитесь, что бэкенд запущен.";
+    return tServerError;
   }
   try {
     const parsed = JSON.parse(rawMessage);
-    // ASP.NET validation errors: { errors: { Field: ["msg"] } }
     if (parsed.errors) {
       const first = Object.values(parsed.errors).flat()[0];
       if (first) return first;
     }
     return parsed.message || parsed.title || rawMessage;
   } catch {
-    return rawMessage;
+    return rawMessage || tRegisterError;
   }
 }
 
@@ -25,11 +24,10 @@ export default function RegisterPage() {
   const { register } = useUserAuth();
   const navigate     = useNavigate();
   const location     = useLocation();
+  const { t }        = useTranslation();
   const from         = location.state?.from?.pathname || "/";
 
-  const [form, setForm] = useState({
-    fullName: "", email: "", password: "", confirm: "",
-  });
+  const [form, setForm] = useState({ fullName: "", email: "", password: "", confirm: "" });
   const [errors, setErrors]     = useState({});
   const [apiError, setApiError] = useState("");
   const [loading, setLoading]   = useState(false);
@@ -42,14 +40,10 @@ export default function RegisterPage() {
 
   const validate = () => {
     const e = {};
-    if (!form.fullName.trim())
-      e.fullName = "Введите ваше имя";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      e.email = "Введите корректный email";
-    if (form.password.length < 6)
-      e.password = "Пароль — минимум 6 символов";
-    if (form.password !== form.confirm)
-      e.confirm = "Пароли не совпадают";
+    if (!form.fullName.trim())           e.fullName = t("registerPage.fullNameError");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = t("registerPage.emailError");
+    if (form.password.length < 6)        e.password = t("registerPage.passError");
+    if (form.password !== form.confirm)  e.confirm  = t("registerPage.confirmError");
     return e;
   };
 
@@ -60,15 +54,11 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      await register({
-        fullName: form.fullName,
-        email:    form.email,
-        password: form.password,
-      });
+      await register({ fullName: form.fullName, email: form.email, password: form.password });
       navigate(from, { replace: true });
     } catch (err) {
       console.error("Register error:", err.message);
-      setApiError(extractErrorMessage(err.message) || "Ошибка регистрации. Попробуйте позже.");
+      setApiError(extractErrorMessage(err.message, t("registerPage.serverError"), t("registerPage.registerError")));
     } finally {
       setLoading(false);
     }
@@ -86,16 +76,16 @@ export default function RegisterPage() {
           <span>Dr. Kadyrbekova</span>
         </Link>
 
-        <h1 className="auth-title">Создать аккаунт</h1>
-        <p className="auth-subtitle">Заполните данные для регистрации</p>
+        <h1 className="auth-title">{t("registerPage.title")}</h1>
+        <p className="auth-subtitle">{t("registerPage.subtitle")}</p>
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="auth-form__grid">
             <div className="form-group">
-              <label>Имя и фамилия *</label>
+              <label>{t("registerPage.fullNameLabel")} *</label>
               <input
                 type="text"
-                placeholder="Иван Иванов"
+                placeholder={t("registerPage.fullNamePh")}
                 value={form.fullName}
                 onChange={e => set("fullName", e.target.value)}
                 autoFocus
@@ -104,7 +94,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="form-group">
-              <label>Email *</label>
+              <label>{t("registerPage.emailLabel")} *</label>
               <input
                 type="email"
                 placeholder="you@example.com"
@@ -115,10 +105,10 @@ export default function RegisterPage() {
             </div>
 
             <div className="form-group">
-              <label>Пароль *</label>
+              <label>{t("registerPage.passLabel")} *</label>
               <input
                 type="password"
-                placeholder="Минимум 6 символов"
+                placeholder={t("registerPage.passPh")}
                 value={form.password}
                 onChange={e => set("password", e.target.value)}
               />
@@ -126,10 +116,10 @@ export default function RegisterPage() {
             </div>
 
             <div className="form-group">
-              <label>Подтверждение пароля *</label>
+              <label>{t("registerPage.confirmLabel")} *</label>
               <input
                 type="password"
-                placeholder="Повторите пароль"
+                placeholder={t("registerPage.confirmPh")}
                 value={form.confirm}
                 onChange={e => set("confirm", e.target.value)}
               />
@@ -140,13 +130,15 @@ export default function RegisterPage() {
           {apiError && <p className="auth-error">{apiError}</p>}
 
           <button type="submit" className="btn-primary auth-submit" disabled={loading}>
-            {loading ? "Регистрируем…" : "Зарегистрироваться"}
+            {loading ? t("registerPage.loading") : t("registerPage.submit")}
           </button>
         </form>
 
         <p className="auth-switch">
-          Уже есть аккаунт?{" "}
-          <Link to="/login" state={{ from: location.state?.from }}>Войти</Link>
+          {t("registerPage.hasAccount")}{" "}
+          <Link to="/login" state={{ from: location.state?.from }}>
+            {t("registerPage.loginLink")}
+          </Link>
         </p>
       </div>
     </div>

@@ -1,14 +1,14 @@
 import { useState } from "react";
 
-const MOOD_LABEL = {
-  excellent: "Отличное",
-  good:      "Хорошее",
-  normal:    "Нормальное",
-  bad:       "Плохое",
-  very_bad:  "Очень плохое",
+const MOOD_META = {
+  excellent: { emoji: "😄", label: "Отличное" },
+  good:      { emoji: "😊", label: "Хорошее" },
+  normal:    { emoji: "😐", label: "Нормальное" },
+  bad:       { emoji: "😔", label: "Плохое" },
+  very_bad:  { emoji: "😢", label: "Очень плохое" },
 };
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 8;
 
 function formatDate(iso) {
   if (!iso) return "—";
@@ -18,16 +18,24 @@ function formatDate(iso) {
     : d.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
 }
 
+/* Determines which emoji to show on the timeline dot */
+function dotEmoji(entry) {
+  if (entry.mood && MOOD_META[entry.mood]) return MOOD_META[entry.mood].emoji;
+  if (entry.systolicPressure != null) return "❤️";
+  if (entry.sleepHours       != null) return "😴";
+  if (entry.weightKg         != null) return "⚖️";
+  return "📝";
+}
+
 export default function HealthDiaryList({ entries, onDelete, deleting }) {
   const [page,      setPage]      = useState(1);
   const [confirmId, setConfirmId] = useState(null);
 
-  const sorted  = [...entries].sort((a, b) => new Date(b.entryDate) - new Date(a.entryDate));
+  const sorted  = [...entries].sort((a,b) => new Date(b.entryDate)-new Date(a.entryDate));
   const visible = sorted.slice(0, page * PAGE_SIZE);
   const hasMore = visible.length < sorted.length;
 
-  const handleDeleteClick = (id) => {
-    // Two-click confirmation: first click sets confirmId, second triggers delete
+  const handleDeleteClick = id => {
     if (confirmId === id) {
       onDelete(id);
       setConfirmId(null);
@@ -38,135 +46,143 @@ export default function HealthDiaryList({ entries, onDelete, deleting }) {
 
   if (sorted.length === 0) {
     return (
-      <div className="hd-empty">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--light-gray)" strokeWidth="1.5">
-          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/>
-          <line x1="16" y1="17" x2="8" y2="17"/>
-          <polyline points="10 9 9 9 8 9"/>
-        </svg>
-        <p>Записей пока нет. Добавьте первую!</p>
+      <div className="hd-timeline-empty">
+        <div className="hd-timeline-empty__icon">📓</div>
+        <div className="hd-timeline-empty__title">Журнал пуст</div>
+        <p className="hd-timeline-empty__sub">
+          Добавьте первую запись, чтобы начать отслеживать своё здоровье
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="hd-list">
-      {visible.map(entry => (
-        <div className="hd-card" key={entry.id}>
-          <div className="hd-card__header">
-            <span className="hd-card__date">{formatDate(entry.entryDate)}</span>
+    <>
+      <div className="hd-timeline">
+        {visible.map((entry, idx) => {
+          const mood = entry.mood ? MOOD_META[entry.mood] : null;
 
-            <div className="hd-card__actions">
-              {confirmId === entry.id ? (
-                <>
-                  <span className="hd-card__confirm-text">Удалить запись?</span>
-                  <button
-                    className="hd-card__btn hd-card__btn--danger"
-                    onClick={() => handleDeleteClick(entry.id)}
-                    disabled={deleting === entry.id}
-                  >
-                    {deleting === entry.id ? "…" : "Да, удалить"}
-                  </button>
-                  <button
-                    className="hd-card__btn"
-                    onClick={() => setConfirmId(null)}
-                  >
-                    Нет
-                  </button>
-                </>
-              ) : (
-                <button
-                  className="hd-card__btn hd-card__btn--ghost"
-                  onClick={() => handleDeleteClick(entry.id)}
-                >
-                  Удалить
-                </button>
-              )}
+          return (
+            <div className="hd-tentry" key={entry.id}
+              style={{ animationDelay: `${idx * 0.05}s` }}>
+
+              {/* Dot on the timeline line */}
+              <div className="hd-tentry__dot">{dotEmoji(entry)}</div>
+
+              {/* Entry card */}
+              <div className="hd-tentry__card">
+
+                {/* Header: date + mood badge */}
+                <div className="hd-tentry__header">
+                  <span className="hd-tentry__date">{formatDate(entry.entryDate)}</span>
+                  {mood && (
+                    <span className="hd-tentry__mood-badge">
+                      {mood.emoji} {mood.label}
+                    </span>
+                  )}
+                </div>
+
+                {/* Metric pills */}
+                {(entry.weightKg != null ||
+                  entry.systolicPressure != null ||
+                  entry.bloodSugar != null ||
+                  entry.sleepHours != null ||
+                  entry.tookMedication != null) && (
+                  <div className="hd-tentry__metrics">
+                    {entry.weightKg != null && (
+                      <span className="hd-metric-pill">
+                        <span>⚖️</span> {entry.weightKg} кг
+                      </span>
+                    )}
+                    {entry.systolicPressure != null && (
+                      <span className="hd-metric-pill">
+                        <span>❤️</span> {entry.systolicPressure}/{entry.diastolicPressure ?? "—"} мм
+                      </span>
+                    )}
+                    {entry.bloodSugar != null && (
+                      <span className="hd-metric-pill">
+                        <span>🩸</span> {entry.bloodSugar} ммоль/л
+                      </span>
+                    )}
+                    {entry.sleepHours != null && (
+                      <span className="hd-metric-pill">
+                        <span>😴</span> {entry.sleepHours} ч
+                      </span>
+                    )}
+                    {entry.tookMedication != null && (
+                      <span className="hd-metric-pill"
+                        style={entry.tookMedication
+                          ? {background:"#DCFCE7", color:"#16A34A", border:"1px solid #BBF7D0"}
+                          : {background:"#F3F4F6", color:"#6B7280"}}>
+                        {entry.tookMedication ? "💊 Принял" : "💊 Не принял"}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Symptoms */}
+                {entry.symptoms && (
+                  <div className="hd-tentry__symptoms">
+                    <span className="hd-tentry__symptom-lbl">Симптомы:</span>
+                    {entry.symptoms.split(",").map(s=>s.trim()).filter(Boolean).map((s,i) => (
+                      <span key={i} className="hd-stag-sm">{s}</span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Medication notes */}
+                {entry.tookMedication && entry.medicationNotes && (
+                  <div className="hd-tentry__medinfo">
+                    💊 {entry.medicationNotes}
+                  </div>
+                )}
+
+                {/* Comment */}
+                {entry.comment && (
+                  <p className="hd-tentry__comment">{entry.comment}</p>
+                )}
+
+                {/* Delete controls */}
+                <div className="hd-tentry__footer">
+                  {confirmId === entry.id ? (
+                    <>
+                      <span className="hd-tentry__del-confirm-text">Удалить запись?</span>
+                      <button
+                        className="hd-tentry__del-btn hd-tentry__del-btn--confirm"
+                        onClick={() => handleDeleteClick(entry.id)}
+                        disabled={deleting === entry.id}
+                      >
+                        {deleting === entry.id ? "…" : "Да, удалить"}
+                      </button>
+                      <button
+                        className="hd-tentry__del-cancel"
+                        onClick={() => setConfirmId(null)}
+                      >
+                        Нет
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      className="hd-tentry__del-btn"
+                      onClick={() => handleDeleteClick(entry.id)}
+                    >
+                      Удалить
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-
-          {/* Metrics grid */}
-          <div className="hd-card__metrics">
-            {entry.weightKg != null && (
-              <div className="hd-metric">
-                <span className="hd-metric__label">Вес</span>
-                <span className="hd-metric__value">{entry.weightKg} кг</span>
-              </div>
-            )}
-            {(entry.systolicPressure != null || entry.diastolicPressure != null) && (
-              <div className="hd-metric">
-                <span className="hd-metric__label">Давление</span>
-                <span className="hd-metric__value">
-                  {entry.systolicPressure ?? "—"}/{entry.diastolicPressure ?? "—"} мм рт.ст.
-                </span>
-              </div>
-            )}
-            {entry.bloodSugar != null && (
-              <div className="hd-metric">
-                <span className="hd-metric__label">Сахар</span>
-                <span className="hd-metric__value">{entry.bloodSugar} ммоль/л</span>
-              </div>
-            )}
-            {entry.sleepHours != null && (
-              <div className="hd-metric">
-                <span className="hd-metric__label">Сон</span>
-                <span className="hd-metric__value">{entry.sleepHours} ч</span>
-              </div>
-            )}
-            {entry.mood && (
-              <div className="hd-metric">
-                <span className="hd-metric__label">Самочувствие</span>
-                <span className="hd-metric__value">{MOOD_LABEL[entry.mood] ?? entry.mood}</span>
-              </div>
-            )}
-            {entry.tookMedication != null && (
-              <div className="hd-metric">
-                <span className="hd-metric__label">Препараты</span>
-                <span className={`hd-metric__value ${entry.tookMedication ? "hd-metric__value--yes" : "hd-metric__value--no"}`}>
-                  {entry.tookMedication ? "Принял(а)" : "Не принимал(а)"}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Symptom tags */}
-          {entry.symptoms && (
-            <div className="hd-card__symptoms">
-              <span className="hd-card__symptoms-label">Симптомы:</span>
-              {entry.symptoms
-                .split(",")
-                .map(s => s.trim())
-                .filter(Boolean)
-                .map((s, i) => (
-                  <span key={i} className="hd-tag">{s}</span>
-                ))}
-            </div>
-          )}
-
-          {/* Medication notes */}
-          {entry.tookMedication && entry.medicationNotes && (
-            <p className="hd-card__med-notes">
-              <strong>Препараты:</strong> {entry.medicationNotes}
-            </p>
-          )}
-
-          {/* Free comment */}
-          {entry.comment && (
-            <p className="hd-card__comment">{entry.comment}</p>
-          )}
-        </div>
-      ))}
+          );
+        })}
+      </div>
 
       {hasMore && (
-        <button
-          className="btn-ghost hd-list__more"
-          onClick={() => setPage(p => p + 1)}
-        >
-          Показать ещё ({sorted.length - visible.length})
-        </button>
+        <div className="hd-load-more">
+          <button className="hd-load-more__btn" onClick={() => setPage(p => p+1)}>
+            Показать ещё ({sorted.length - visible.length})
+          </button>
+        </div>
       )}
-    </div>
+    </>
   );
 }

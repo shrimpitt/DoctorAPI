@@ -1,4 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400&display=swap');
+/*
+  Единый шрифт: Inter — полная поддержка кириллицы + казахского (ғ қ ң ұ ү ә і һ).
+  Google Fonts css2 API автоматически отдаёт нужные unicode-ranges, включая cyrillic-ext.
+*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&display=swap');
 
 :root {
   /* ── Brand ── */
@@ -39,9 +43,28 @@
   --text-secondary: #4B5563;
 
   /* ── Typography ── */
-  --font-display: 'Cormorant Garamond', serif;
-  --font-heading: 'Plus Jakarta Sans', sans-serif;
-  --font-body:    'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Inter', -apple-system, system-ui, sans-serif;
+  --font-heading: 'Inter', -apple-system, system-ui, sans-serif;
+  --font-body:    'Inter', -apple-system, system-ui, sans-serif;
+
+  /* Type scale */
+  --text-xs:   12px;
+  --text-sm:   13px;
+  --text-base: 16px;
+  --text-md:   17px;
+  --text-lg:   18px;
+  --text-xl:   20px;
+  --text-2xl:  24px;
+  --text-3xl:  32px;
+  --text-4xl:  40px;
+  --text-5xl:  48px;
+
+  /* Font weights */
+  --fw-normal:   400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+  --fw-extrabold:800;
 
   /* ── Layout ── */
   --section-padding: 80px 0;
@@ -126,10 +149,11 @@ body {
   font-family: var(--font-body);
   background: var(--bg);
   color: var(--text);
-  line-height: 1.75;
-  font-size: 20px;
-  font-weight: 500;
+  line-height: 1.7;
+  font-size: var(--text-base);
+  font-weight: var(--fw-medium);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .container {
@@ -150,19 +174,20 @@ body {
 }
 .section-header h2 {
   font-family: var(--font-heading);
-  font-size: clamp(44px, 5.5vw, 72px);
-  font-weight: 700;
-  line-height: 1.1;
+  font-size: clamp(32px, 4.5vw, 48px);
+  font-weight: var(--fw-bold);
+  line-height: 1.15;
   color: var(--text);
   margin-bottom: 14px;
+  letter-spacing: -0.5px;
 }
 .section-header p {
-  font-size: 20px;
+  font-size: var(--text-lg);
   color: var(--text-secondary);
-  max-width: 520px;
+  max-width: 540px;
   margin: 0 auto;
-  font-weight: 500;
-  line-height: 1.7;
+  font-weight: var(--fw-medium);
+  line-height: 1.65;
 }
 .section-tag {
   display: inline-flex;
@@ -187,11 +212,11 @@ body {
   background: var(--green);
   color: white;
   border: none;
-  padding: 14px 32px;
+  padding: 12px 28px;
   border-radius: 12px;
   font-family: var(--font-body);
-  font-size: 18px;
-  font-weight: 600;
+  font-size: var(--text-base);
+  font-weight: var(--fw-semibold);
   letter-spacing: 0.2px;
   cursor: pointer;
   text-decoration: none;
@@ -210,11 +235,11 @@ body {
   background: transparent;
   color: var(--blue);
   border: 1.5px solid var(--blue);
-  padding: 12px 28px;
+  padding: 10px 24px;
   border-radius: var(--radius-sm);
   font-family: var(--font-body);
-  font-size: 18px;
-  font-weight: 600;
+  font-size: var(--text-base);
+  font-weight: var(--fw-semibold);
   cursor: pointer;
   text-decoration: none;
   transition: all var(--transition);
@@ -292,19 +317,19 @@ body {
   gap: 6px;
 }
 .form-group label {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--text-base);
+  font-weight: var(--fw-semibold);
   color: var(--text);
 }
 .form-group input,
 .form-group select,
 .form-group textarea {
-  padding: 12px 16px;
+  padding: 11px 15px;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   font-family: var(--font-body);
-  font-size: 16px;
-  font-weight: 500;
+  font-size: var(--text-base);
+  font-weight: var(--fw-medium);
   color: var(--text);
   background: var(--warm-white);
   outline: none;

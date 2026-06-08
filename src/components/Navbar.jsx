@@ -48,7 +48,7 @@ export default function Navbar({ activeSection, setActiveSection }) {
 
   const handleLogout = () => {
     logout();
-    navigate("/");
+    navigate("/auth");
     setMenuOpen(false);
   };
 
@@ -195,7 +195,7 @@ export default function Navbar({ activeSection, setActiveSection }) {
               </div>
             ) : (
               <div className="navbar__auth-btns">
-                <Link to="/login" className="btn-ghost navbar__btn-login" onClick={() => setMenuOpen(false)}>
+                <Link to="/auth" className="btn-ghost navbar__btn-login" onClick={() => setMenuOpen(false)}>
                   {t("auth.login")}
                 </Link>
                 <Link to="/register" className="btn-primary navbar__cta" onClick={() => setMenuOpen(false)}>

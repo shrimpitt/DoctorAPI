@@ -10,7 +10,9 @@ import {
   getAdminUserDiarySummary,
   generateAiSummary,
   getAiSummaries,
+  getAdminUserRecommendations,
 } from "../../api";
+import DiaryRecommendationsSection from "../../components/DiaryRecommendationsSection";
 import "./AdminLayout.css";
 import "./AdminPatientDiaryPage.css";
 
@@ -214,6 +216,11 @@ export default function AdminPatientDiaryPage() {
   const [genError,       setGenError]       = useState("");
   const [toast,          setToast]          = useState("");
 
+  // ── Admin: patient's peptide recommendations ───────────────────────────────
+  const [adminRecs,      setAdminRecs]      = useState(null);
+  const [adminRecsLoading, setAdminRecsLoading] = useState(true);
+  const [adminRecsError,   setAdminRecsError]   = useState(null);
+
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(""), 3500); };
 
   const loadAiSummaries = useCallback(async () => {
@@ -243,6 +250,20 @@ export default function AdminPatientDiaryPage() {
     })();
 
     loadAiSummaries();
+
+    // Load patient's peptide recommendations
+    (async () => {
+      setAdminRecsLoading(true);
+      setAdminRecsError(null);
+      try {
+        const data = await getAdminUserRecommendations(userId);
+        setAdminRecs(data);
+      } catch {
+        setAdminRecsError("Не удалось загрузить рекомендации пациента.");
+      } finally {
+        setAdminRecsLoading(false);
+      }
+    })();
   }, [userId, loadAiSummaries]);
 
   const handleGenerate = async () => {
@@ -355,6 +376,17 @@ export default function AdminPatientDiaryPage() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Peptide recommendations for this patient */}
+      <div className="apd-card" style={{ padding: 0, overflow: "hidden" }}>
+        <DiaryRecommendationsSection
+          recs={adminRecs}
+          loading={adminRecsLoading}
+          error={adminRecsError}
+          isAdmin={true}
+          diaryEmpty={!loadingEntries && entries.length === 0}
+        />
       </div>
 
       {/* Charts */}

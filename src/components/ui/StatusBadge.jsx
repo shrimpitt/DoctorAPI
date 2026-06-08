@@ -1,10 +1,12 @@
 const MAP = {
-  pending:   { label: "Ожидает",    bg: "#FFF7E6", color: "#B07D00" },
-  confirmed: { label: "Подтверждён", bg: "#EDF5EC", color: "#3A7A34" },
-  completed: { label: "Завершён",    bg: "#E8F0FE", color: "#1A56B0" },
-  cancelled: { label: "Отменён",    bg: "#FEE8E8", color: "#B01A1A" },
-  shipped:   { label: "Отправлен",  bg: "#EDE8FE", color: "#5B1AB0" },
-  delivered: { label: "Доставлен",  bg: "#EDF5EC", color: "#3A7A34" },
+  pending:          { label: "Ожидает",        bg: "#FFF7E6", color: "#B07D00" },
+  confirmed:        { label: "Подтверждён",    bg: "#EDF5EC", color: "#3A7A34" },
+  completed:        { label: "Завершён",        bg: "#E8F0FE", color: "#1A56B0" },
+  cancelled:        { label: "Отменён",        bg: "#FEE8E8", color: "#B01A1A" },
+  shipped:          { label: "Отправлен",      bg: "#EDE8FE", color: "#5B1AB0" },
+  delivered:        { label: "Доставлен",      bg: "#EDF5EC", color: "#3A7A34" },
+  paid:             { label: "Оплачен",        bg: "#D1FAE5", color: "#065F46" },
+  awaiting_payment: { label: "Ожидает оплаты", bg: "#EFF6FF", color: "#1D4ED8" },
 };
 
 export default function StatusBadge({ status }) {

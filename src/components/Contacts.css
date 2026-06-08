@@ -142,6 +142,46 @@
   line-height: 1.7;
 }
 
+/* WhatsApp block on success screen */
+.contacts__success-wa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  width: 100%;
+  max-width: 320px;
+}
+[data-theme="dark"] .contacts__success-wa {
+  background: rgba(34,197,94,0.08);
+  border-color: rgba(134,239,172,0.35);
+}
+.contacts__success-wa-hint {
+  font-size: 12px !important;
+  color: #166534 !important;
+  text-align: center;
+  max-width: 100% !important;
+  line-height: 1.55 !important;
+}
+[data-theme="dark"] .contacts__success-wa-hint { color: #86efac !important; }
+.contacts__wa-success-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  background: #25D366;
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.contacts__wa-success-btn:hover { background: #20BA5A; }
+
 /* ── INFO ── */
 .contacts__info { display: flex; flex-direction: column; gap: 32px; }
 

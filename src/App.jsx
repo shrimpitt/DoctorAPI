@@ -15,10 +15,13 @@ import ShopPage          from "./pages/ShopPage";
 import ProductPage       from "./pages/ProductPage";
 import CheckoutPage      from "./pages/CheckoutPage";
 import OrderPage         from "./pages/OrderPage";
+import AuthChoicePage    from "./pages/AuthChoicePage";
 import LoginPage         from "./pages/LoginPage";
 import RegisterPage      from "./pages/RegisterPage";
 import ProfilePage       from "./pages/ProfilePage";
-import HealthDiaryPage  from "./pages/HealthDiaryPage";
+import HealthDiaryPage   from "./pages/HealthDiaryPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import DisclaimerModal   from "./components/DisclaimerModal";
 
 import AdminLayout            from "./pages/admin/AdminLayout";
 import AppointmentsAdmin      from "./pages/admin/AppointmentsAdmin";
@@ -39,11 +42,14 @@ export default function App() {
         <AuthProvider>
           <AdminAuthProvider>
             <CartProvider>
+              <DisclaimerModal />
               <Routes>
                 {/* Public routes */}
                 <Route path="/"              element={<LandingPage />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                 <Route path="/courses"       element={<CoursesPage />} />
                 <Route path="/courses/:id"   element={<CourseDetailPage />} />
+                <Route path="/auth"          element={<AuthChoicePage />} />
                 <Route path="/login"         element={<LoginPage />} />
                 <Route path="/register"      element={<RegisterPage />} />
                 <Route path="/shop"          element={<ShopPage />} />

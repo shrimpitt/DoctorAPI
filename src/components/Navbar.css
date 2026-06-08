@@ -70,8 +70,8 @@
   border: none;
   cursor: pointer;
   font-family: var(--font-body);
-  font-size: 16px;
-  font-weight: 500;
+  font-size: var(--text-base);
+  font-weight: var(--fw-medium);
   color: var(--text-secondary);
   padding: 7px 11px;
   border-radius: var(--radius-xs);

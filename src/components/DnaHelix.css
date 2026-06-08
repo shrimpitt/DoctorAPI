@@ -1,0 +1,95 @@
+/* ── DNA Helix animation ── */
+
+.dna-wrap {
+  width: 100%;
+  height: 90px;
+  overflow: hidden;
+  position: relative;
+}
+
+.dna-svg {
+  width: 100%;
+  height: 90px;
+  overflow: visible;
+  display: block;
+}
+
+/* Seamless scroll: group moves exactly one period (100px) */
+.dna-flow {
+  animation: dnaFlow 5s linear infinite;
+}
+
+@keyframes dnaFlow {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100px); }
+}
+
+/* Strand A — primary purple (front) */
+.dna-strand-a {
+  fill: none;
+  stroke: var(--primary, #5B4FCF);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Strand B — lighter purple (back, slightly faded) */
+.dna-strand-b {
+  fill: none;
+  stroke: #8b7ee8;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.55;
+}
+
+/* Rungs */
+.dna-rung {
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.65;
+}
+
+.dna-rung--a { stroke: var(--green, #4CAF7D); }
+.dna-rung--b { stroke: #22d3ee; }
+
+/* Dots at rung ends */
+.dna-dot {
+  opacity: 0.8;
+}
+
+.dna-dot.dna-rung--a { fill: var(--green, #4CAF7D); }
+.dna-dot.dna-rung--b { fill: #22d3ee; }
+
+/* Subtle pulse on the whole helix */
+.dna-wrap {
+  animation: dnaPulse 4s ease-in-out infinite;
+}
+
+@keyframes dnaPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.85; }
+}
+
+/* ── Dark theme ── */
+[data-theme="dark"] .dna-strand-a {
+  stroke: #7c6fe0;
+}
+
+[data-theme="dark"] .dna-strand-b {
+  stroke: var(--primary, #5B4FCF);
+  opacity: 0.5;
+}
+
+[data-theme="dark"] .dna-rung--a {
+  stroke: #4CAF7D;
+  opacity: 0.8;
+}
+
+[data-theme="dark"] .dna-rung--b {
+  stroke: #22d3ee;
+  opacity: 0.8;
+}
+
+[data-theme="dark"] .dna-dot.dna-rung--a { fill: #4CAF7D; opacity: 0.9; }
+[data-theme="dark"] .dna-dot.dna-rung--b { fill: #22d3ee; opacity: 0.9; }

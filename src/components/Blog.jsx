@@ -1,5 +1,12 @@
 import { useTranslation } from "react-i18next";
+import DnaHelix from "./DnaHelix";
 import "./Blog.css";
+
+const POST_URLS = [
+  "https://dietolog247.ru/journal/zdorove/pochemu-posle-sna-oshhushhaetsya-slabost-i-ustalost-prichiny-i-resheniya/#close",
+  "https://doctorpiter.ru/zdorove/zhenskoe-zdorove-posle-35-vrachi-rasskazali-kakie-analizy-i-obsledovaniya-nelzya-propustit-id6459933/",
+  "https://www.krasotaimedicina.ru/diseases/zabolevanija_endocrinology/insulin-resistance",
+];
 
 export default function Blog() {
   const { t } = useTranslation();
@@ -17,22 +24,31 @@ export default function Blog() {
         <div className="blog__grid">
           {posts.map((post, idx) => (
             <article className="blog-card" key={idx}>
-              <div className="blog-card__img-placeholder">
-                <span>{post.tag}</span>
+              {/* DNA helix replaces the old text-badge placeholder */}
+              <div className="blog-card__dna">
+                <DnaHelix />
               </div>
+
               <div className="blog-card__body">
                 <div className="blog-card__meta">
                   <span className="blog-card__tag">{post.tag}</span>
-                  <span className="blog-card__date">{post.date} · {post.readTime} {t("blog.readTime")}</span>
+                  <span className="blog-card__date">
+                    {post.date} · {post.readTime} {t("blog.readTime")}
+                  </span>
                 </div>
                 <h3 className="blog-card__title">{post.title}</h3>
                 <p className="blog-card__excerpt">{post.excerpt}</p>
-                <button className="blog-card__link">
+                <a
+                  href={POST_URLS[idx]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="blog-card__link"
+                >
                   {t("blog.readMore")}
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M5 12h14M12 5l7 7-7 7"/>
                   </svg>
-                </button>
+                </a>
               </div>
             </article>
           ))}

@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getScheduleSlots, getConsultationTypes } from "../../api";
-import { useAdminAuth } from "../../context/AdminAuthContext";
+import { getScheduleSlots, getConsultationTypes, createBulkSlots } from "../../api";
 import Spinner from "../../components/ui/Spinner";
 import "./AdminLayout.css";
 
@@ -12,7 +11,6 @@ const EMPTY_FORM = {
 };
 
 export default function SlotsAdmin() {
-  const { getToken } = useAdminAuth();
   const [slots,   setSlots]   = useState([]);
   const [types,   setTypes]   = useState([]);
   const [loading, setLoading] = useState(true);
@@ -86,26 +84,9 @@ export default function SlotsAdmin() {
         slots: [{ startTime, endTime }],
       };
 
-      const token = getToken();
-
-      console.log("POST /api/doctor-schedule-slots/bulk →", body);
-
-      const response = await fetch("http://localhost:8080/api/doctor-schedule-slots/bulk", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { "Authorization": `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(body),
-      });
-
-      if (!response.ok) {
-        const text = await response.text();
-        console.error("Ошибка ответа:", response.status, text);
-        throw new Error(`HTTP ${response.status}: ${text}`);
-      }
-
-      const created = await response.json();
+      // createBulkSlots uses the shared request() helper which routes through
+      // the Vite proxy and adds the admin Bearer token via authHeaders() automatically.
+      const created = await createBulkSlots(body);
       console.log("Слот создан:", created);
 
       setForm(EMPTY_FORM);

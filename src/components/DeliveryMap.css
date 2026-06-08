@@ -1,0 +1,208 @@
+/* ── Leaflet emoji icon ── */
+.dlv-emoji-icon {
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  user-select: none;
+}
+
+/* ── Modal overlay ── */
+.dlv-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: dlvFadeIn 0.2s ease;
+}
+
+@keyframes dlvFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.dlv-modal {
+  background: var(--bg);
+  border-radius: var(--radius);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+  width: 100%;
+  max-width: 760px;
+  max-height: 92vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: dlvSlideUp 0.28s cubic-bezier(0.16,1,0.3,1);
+}
+
+@keyframes dlvSlideUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Header ── */
+.dlv-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.dlv-title {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.dlv-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-section);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+.dlv-close:hover { background: var(--border); color: var(--text); }
+
+/* ── Map ── */
+.dlv-map-wrap {
+  flex: 1;
+  min-height: 360px;
+  position: relative;
+}
+
+.dlv-map {
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+}
+
+/* ── Info panel ── */
+.dlv-info {
+  padding: 18px 22px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex-shrink: 0;
+  background: var(--bg);
+}
+
+.dlv-info__row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.dlv-info__row--spread {
+  justify-content: space-between;
+}
+
+.dlv-info__arrow {
+  font-size: 20px;
+  color: var(--primary);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.dlv-info__item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dlv-info__label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.dlv-info__value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.dlv-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+/* ── Progress bar ── */
+.dlv-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dlv-progress__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dlv-progress__pct {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.dlv-progress__track {
+  height: 8px;
+  background: var(--bg-section);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.dlv-progress__fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  min-width: 4px;
+}
+
+.dlv-progress__labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* ── Dark theme ── */
+[data-theme="dark"] .dlv-modal { background: var(--bg); }
+[data-theme="dark"] .dlv-map-wrap .leaflet-tile {
+  filter: brightness(0.85) saturate(0.8);
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .dlv-modal { max-height: 100vh; border-radius: 16px 16px 0 0; align-self: flex-end; }
+  .dlv-overlay { align-items: flex-end; padding: 0; }
+  .dlv-map-wrap { min-height: 280px; }
+  .dlv-map { min-height: 280px; }
+  .dlv-info__row { gap: 10px; }
+}

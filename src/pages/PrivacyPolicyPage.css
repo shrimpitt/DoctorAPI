@@ -1,0 +1,144 @@
+.pp-page {
+  min-height: 100vh;
+  background: var(--bg-section);
+}
+
+/* ── Top bar ── */
+.pp-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 40px;
+}
+
+[data-theme="dark"] .pp-topbar {
+  background: rgba(15,17,23,0.95);
+}
+
+.pp-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.pp-back:hover { color: var(--primary-dark); }
+
+/* ── Container ── */
+.pp-container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 56px 40px 80px;
+}
+
+/* ── Header ── */
+.pp-header {
+  text-align: center;
+  margin-bottom: 48px;
+  padding-bottom: 40px;
+  border-bottom: 2px solid var(--border);
+}
+
+.pp-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.pp-logo__icon {
+  width: 40px;
+  height: 40px;
+  background: var(--primary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.pp-logo__name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pp-title {
+  font-family: var(--font-heading);
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.25;
+  margin-bottom: 10px;
+  letter-spacing: -0.3px;
+}
+
+.pp-date {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* ── Sections ── */
+.pp-content {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.pp-section {
+  padding-bottom: 36px;
+  border-bottom: 1px solid var(--border);
+}
+.pp-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.pp-section__title {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 12px;
+  letter-spacing: 0.1px;
+}
+
+.pp-section__text {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  font-weight: 400;
+}
+
+/* ── Footer ── */
+.pp-footer {
+  margin-top: 56px;
+  display: flex;
+  justify-content: center;
+}
+
+.pp-footer__btn {
+  padding: 12px 32px;
+  font-size: 15px;
+}
+
+/* ── Dark theme ── */
+[data-theme="dark"] .pp-page {
+  background: var(--bg-section);
+}
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .pp-topbar  { padding: 12px 20px; }
+  .pp-container { padding: 40px 20px 60px; }
+  .pp-title   { font-size: 20px; }
+  .pp-section__text { font-size: 14px; }
+}
