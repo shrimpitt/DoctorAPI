@@ -129,7 +129,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Swagger
-if (app.Environment.IsDevelopment())
+var enableSwaggerInProd = builder.Configuration.GetValue<bool>("Swagger:EnableInProduction");
+if (app.Environment.IsDevelopment() || enableSwaggerInProd)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
