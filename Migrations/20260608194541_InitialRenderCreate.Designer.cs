@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DoctorAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260529121021_AddPaymentStatusToOrders")]
-    partial class AddPaymentStatusToOrders
+    [Migration("20260608194541_InitialRenderCreate")]
+    partial class InitialRenderCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
